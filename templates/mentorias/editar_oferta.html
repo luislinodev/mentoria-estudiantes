@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Mi oferta de mentoría{% endblock %}
+
+{% block content %}
+<h1>Oferta de mentoría</h1>
+<p>Define en qué puedes ayudar y cuándo sueles estar disponible.</p>
+<form method="post">
+  {% csrf_token %}
+  {% include "includes/campos_formulario.html" %}
+  <button type="submit">Guardar oferta</button>
+</form>
+{% endblock %}

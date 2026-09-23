@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Sesiones{% endblock %}
+
+{% block content %}
+<h1>Agenda de sesiones</h1>
+{% if sesiones %}
+  <table>
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Especialidad</th>
+        <th>Mentor</th>
+        <th>Aprendiz</th>
+        <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for sesion in sesiones %}
+        <tr>
+          <td><a href="{% url 'mentorias:detalle_sesion' sesion.pk %}">{{ sesion.inicio|date:"d/m/Y H:i" }}</a></td>
+          <td>{{ sesion.solicitud.especialidad }}</td>
+          <td>{{ sesion.mentor.get_full_name|default:sesion.mentor.email }}</td>
+          <td>{{ sesion.aprendiz.get_full_name|default:sesion.aprendiz.email }}</td>
+          <td>{{ sesion.get_estado_display }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>No tienes sesiones.</p>
+{% endif %}
+{% endblock %}

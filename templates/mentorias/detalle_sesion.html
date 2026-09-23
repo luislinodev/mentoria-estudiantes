@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Sesión {{ sesion.inicio|date:"d/m/Y" }}{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'mentorias:sesiones' %}">Sesiones</a></p>
+<h1>{{ sesion.solicitud.especialidad }}</h1>
+<p>Estado: {{ sesion.get_estado_display }}</p>
+<p>Inicio: {{ sesion.inicio|date:"d/m/Y H:i" }}</p>
+<p>Fin: {{ sesion.fin|date:"d/m/Y H:i" }}</p>
+<p>Mentor: {{ sesion.mentor.get_full_name|default:sesion.mentor.email }}</p>
+<p>Aprendiz: {{ sesion.aprendiz.get_full_name|default:sesion.aprendiz.email }}</p>
+{% if sesion.notas %}
+  <p>Notas: {{ sesion.notas }}</p>
+{% endif %}
+
+{% if sesion.estado == "programada" %}
+  <form method="post" action="{% url 'mentorias:completar_sesion' sesion.pk %}">
+    {% csrf_token %}
+    <button type="submit">Marcar como completada</button>
+  </form>
+  <form method="post" action="{% url 'mentorias:cancelar_sesion' sesion.pk %}">
+    {% csrf_token %}
+    <button type="submit">Cancelar sesión</button>
+  </form>
+{% endif %}
+
+{% if sesion.estado == "completada" and user == sesion.aprendiz %}
+  {% if sesion.puede_valorarse %}
+    <p><a href="{% url 'mentorias:valorar' sesion.pk %}">Dejar valoración</a></p>
+  {% else %}
+    <p>Ya valoraste esta mentoría.</p>
+  {% endif %}
+{% endif %}
+{% endblock %}

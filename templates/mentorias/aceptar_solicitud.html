@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Aceptar solicitud{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'mentorias:solicitudes' %}">Solicitudes</a></p>
+<h1>Agendar sesión</h1>
+<p>Aprendiz: {{ solicitud.aprendiz.get_full_name|default:solicitud.aprendiz.email }}</p>
+<p>Especialidad: {{ solicitud.especialidad }}</p>
+<blockquote>{{ solicitud.mensaje }}</blockquote>
+<form method="post">
+  {% csrf_token %}
+  {% include "includes/campos_formulario.html" %}
+  <button type="submit">Confirmar sesión</button>
+  <a href="{% url 'mentorias:solicitudes' %}">Volver</a>
+</form>
+{% endblock %}

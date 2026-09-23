@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Buscar mentores{% endblock %}
+
+{% block content %}
+<h1>Buscar mentores</h1>
+<p>Filtra por especialidad o palabra clave.</p>
+
+<form method="get">
+  <p>
+    <label for="q">Palabra clave</label><br>
+    <input id="q" name="q" value="{{ q }}">
+  </p>
+  <p>
+    <label for="especialidad">Especialidad</label><br>
+    <select id="especialidad" name="especialidad">
+      <option value="">Todas</option>
+      {% for esp in especialidades %}
+        <option value="{{ esp.pk }}" {% if especialidad_id == esp.pk|stringformat:"s" %}selected{% endif %}>{{ esp.nombre }}</option>
+      {% endfor %}
+    </select>
+  </p>
+  <button type="submit">Filtrar</button>
+</form>
+
+{% if mentores %}
+  <ul>
+    {% for oferta in mentores %}
+      <li>
+        <a href="{% url 'mentorias:detalle_mentor' oferta.pk %}">{{ oferta.perfil.nombre_completo }}</a>
+        — {{ oferta.perfil.carrera }}{% if oferta.perfil.ciclo %} · Ciclo {{ oferta.perfil.ciclo }}{% endif %}
+        {% if oferta.especialidades.all %}
+          (
+          {% for esp in oferta.especialidades.all %}
+            {{ esp.nombre }}{% if not forloop.last %}, {% endif %}
+          {% endfor %}
+          )
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No se encontraron mentores con esos criterios.</p>
+{% endif %}
+{% endblock %}

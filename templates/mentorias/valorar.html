@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Valorar mentoría{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'mentorias:sesiones' %}">Sesiones</a></p>
+<h1>Valorar la sesión</h1>
+<p>
+  Cuéntanos cómo te fue con {{ sesion.mentor.get_full_name|default:sesion.mentor.email }}
+  en {{ sesion.solicitud.especialidad }}.
+</p>
+<form method="post">
+  {% csrf_token %}
+  {% include "includes/campos_formulario.html" %}
+  <button type="submit">Enviar valoración</button>
+</form>
+{% endblock %}

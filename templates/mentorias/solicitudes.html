@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Solicitudes{% endblock %}
+
+{% block content %}
+<h1>Solicitudes</h1>
+
+{% if perfil_actual and perfil_actual.es_mentor %}
+  <h2>Recibidas</h2>
+  {% if recibidas %}
+    {% for s in recibidas %}
+      <article>
+        <h3>{{ s.aprendiz.get_full_name|default:s.aprendiz.email }}</h3>
+        <p>{{ s.especialidad }}{% if s.fecha_propuesta %} · {{ s.fecha_propuesta|date:"d/m/Y H:i" }}{% endif %}</p>
+        <p>{{ s.mensaje }}</p>
+        <p>Estado: {{ s.get_estado_display }}</p>
+        {% if s.estado == "pendiente" %}
+          <p><a href="{% url 'mentorias:aceptar_solicitud' s.pk %}">Aceptar y agendar</a></p>
+          <form method="post" action="{% url 'mentorias:rechazar_solicitud' s.pk %}">
+            {% csrf_token %}
+            <button type="submit">Rechazar</button>
+          </form>
+        {% endif %}
+      </article>
+    {% endfor %}
+  {% else %}
+    <p>No tienes solicitudes recibidas.</p>
+  {% endif %}
+{% endif %}
+
+{% if perfil_actual and perfil_actual.es_aprendiz %}
+  <h2>Enviadas</h2>
+  {% if enviadas %}
+    <table>
+      <thead>
+        <tr>
+          <th>Mentor</th>
+          <th>Especialidad</th>
+          <th>Estado</th>
+          <th>Fecha propuesta</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in enviadas %}
+          <tr>
+            <td>{{ s.mentor.get_full_name|default:s.mentor.email }}</td>
+            <td>{{ s.especialidad }}</td>
+            <td>{{ s.get_estado_display }}</td>
+            <td>{{ s.fecha_propuesta|date:"d/m/Y H:i"|default:"—" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No has enviado solicitudes.</p>
+  {% endif %}
+{% endif %}
+{% endblock %}

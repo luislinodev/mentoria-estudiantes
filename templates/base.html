@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Mentoría entre Estudiantes{% endblock %}</title>
+</head>
+<body>
+  <header>
+    <p><a href="{% url 'cuentas:inicio' %}">Mentoría entre Estudiantes</a></p>
+    <nav>
+      <ul>
+        {% if user.is_authenticated %}
+          <li><a href="{% url 'mentorias:buscar' %}">Buscar mentores</a></li>
+          <li><a href="{% url 'mentorias:solicitudes' %}">Solicitudes</a></li>
+          <li><a href="{% url 'mentorias:sesiones' %}">Sesiones</a></li>
+          {% if perfil_actual and perfil_actual.es_mentor %}
+            <li><a href="{% url 'mentorias:editar_oferta' %}">Mi oferta</a></li>
+          {% endif %}
+          <li><a href="{% url 'cuentas:mi_perfil' %}">Mi perfil</a></li>
+          <li><a href="{% url 'account_logout' %}">Cerrar sesión</a></li>
+        {% else %}
+          <li><a href="{% url 'account_login' %}">Iniciar sesión</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    {% if messages %}
+      <ul>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    <p>Mentoría entre estudiantes</p>
+  </footer>
+</body>
+</html>

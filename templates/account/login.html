@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load socialaccount %}
+
+{% block title %}Iniciar sesión{% endblock %}
+
+{% block content %}
+<h1>Iniciar sesión</h1>
+<p>Accede con tu cuenta de Google para crear tu perfil de mentor o aprendiz.</p>
+
+{% if google_oauth_configurado %}
+  <p><a href="{% provider_login_url 'google' %}">Continuar con Google</a></p>
+{% else %}
+  <p>
+    El inicio de sesión con Google no está configurado. Agrega
+    <code>GOOGLE_CLIENT_ID</code> y <code>GOOGLE_CLIENT_SECRET</code> en el archivo <code>.env</code>.
+  </p>
+{% endif %}
+
+{% if debug_mode %}
+  <h2>Acceso de desarrollo</h2>
+  <form method="post">
+    {% csrf_token %}
+    {% include "includes/campos_formulario.html" %}
+    <button type="submit">Entrar con correo</button>
+  </form>
+{% endif %}
+{% endblock %}

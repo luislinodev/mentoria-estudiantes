@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Mi perfil{% endblock %}
+
+{% block content %}
+<h1>{{ perfil.nombre_completo }}</h1>
+
+{% if perfil.avatar_url %}
+  <p><img src="{{ perfil.avatar_url }}" alt="Foto de {{ perfil.nombre_completo }}" width="96" height="96"></p>
+{% endif %}
+
+<p>
+  {% if perfil.carrera %}{{ perfil.carrera }}{% else %}Carrera no indicada{% endif %}
+  {% if perfil.ciclo %} · Ciclo {{ perfil.ciclo }}{% endif %}
+</p>
+
+<p>
+  {% if perfil.es_mentor %}Mentor{% endif %}
+  {% if perfil.es_mentor and perfil.es_aprendiz %} y {% endif %}
+  {% if perfil.es_aprendiz %}Aprendiz{% endif %}
+</p>
+
+{% if perfil.biografia %}
+  <p>{{ perfil.biografia }}</p>
+{% endif %}
+
+<p>
+  <a href="{% url 'cuentas:completar_perfil' %}">Editar perfil</a>
+  {% if perfil.es_mentor %}
+    · <a href="{% url 'mentorias:editar_oferta' %}">Editar oferta</a>
+  {% endif %}
+</p>
+{% endblock %}

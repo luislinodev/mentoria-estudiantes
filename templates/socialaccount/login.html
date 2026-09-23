@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Conectar con Google{% endblock %}
+
+{% block content %}
+<h1>Continuar con Google</h1>
+<p>Vas a autorizar el acceso a tu cuenta de Google para entrar a la plataforma.</p>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Continuar</button>
+</form>
+{% endblock %}

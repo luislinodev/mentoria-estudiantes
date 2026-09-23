@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Solicitar mentoría{% endblock %}
+
+{% block content %}
+<p>
+  <a href="{% url 'mentorias:buscar' %}">Buscar mentores</a>
+  · <a href="{% url 'mentorias:detalle_mentor' oferta.pk %}">{{ oferta.perfil.nombre_completo }}</a>
+</p>
+<h1>Solicitar mentoría</h1>
+<p>Describe en qué necesitas apoyo de {{ oferta.perfil.nombre_completo }}.</p>
+<form method="post">
+  {% csrf_token %}
+  {% include "includes/campos_formulario.html" %}
+  <button type="submit">Enviar solicitud</button>
+  <a href="{% url 'mentorias:detalle_mentor' oferta.pk %}">Cancelar</a>
+</form>
+{% endblock %}

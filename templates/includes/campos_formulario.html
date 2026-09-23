@@ -1,0 +1,20 @@
+{% if form.non_field_errors %}
+  <ul>
+    {% for error in form.non_field_errors %}
+      <li>{{ error }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+{% for field in form %}
+  <p>
+    {% if field.field.widget.input_type == "checkbox" and not field.field.widget.allow_multiple_selected %}
+      {{ field }}
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+    {% else %}
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label><br>
+      {{ field }}
+    {% endif %}
+    {% if field.help_text %}<br><small>{{ field.help_text }}</small>{% endif %}
+    {{ field.errors }}
+  </p>
+{% endfor %}

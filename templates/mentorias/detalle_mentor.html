@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}{{ oferta.perfil.nombre_completo }}{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'mentorias:buscar' %}">Buscar mentores</a></p>
+<h1>{{ oferta.perfil.nombre_completo }}</h1>
+<p>
+  {{ oferta.perfil.carrera }}{% if oferta.perfil.ciclo %} · Ciclo {{ oferta.perfil.ciclo }}{% endif %}
+</p>
+{% if oferta.perfil.biografia %}
+  <p>{{ oferta.perfil.biografia }}</p>
+{% endif %}
+
+<h2>Especialidades</h2>
+<ul>
+  {% for esp in oferta.especialidades.all %}
+    <li>{{ esp.nombre }}</li>
+  {% empty %}
+    <li>Sin especialidades registradas.</li>
+  {% endfor %}
+</ul>
+
+<h2>Temas</h2>
+<p>{{ oferta.temas|default:"Sin descripción de temas." }}</p>
+<p>Disponibilidad: {{ oferta.disponibilidad|default:"No indicada" }}</p>
+<p>Calificación: {{ oferta.calificacion_promedio }} ({{ oferta.total_valoraciones }} valoraciones)</p>
+
+{% if perfil_actual and perfil_actual.es_aprendiz and oferta.perfil.usuario != user %}
+  <p><a href="{% url 'mentorias:crear_solicitud' oferta.pk %}">Solicitar mentoría</a></p>
+{% endif %}
+
+{% if valoraciones %}
+  <h2>Valoraciones</h2>
+  <ul>
+    {% for valoracion in valoraciones %}
+      <li>{{ valoracion.estrellas }} — {{ valoracion.comentario }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+{% endblock %}

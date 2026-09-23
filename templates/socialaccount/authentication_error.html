@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Error de autenticación{% endblock %}
+
+{% block content %}
+<h1>No se pudo iniciar sesión</h1>
+<p>
+  No se pudo completar el inicio de sesión con Google. Verifica las credenciales OAuth y la URI de redirección
+  <code>http://127.0.0.1:8000/accounts/google/login/callback/</code>.
+</p>
+<p><a href="{% url 'account_login' %}">Volver a intentar</a></p>
+{% endblock %}
