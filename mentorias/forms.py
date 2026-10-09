@@ -2,7 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
-from .models import OfertaMentor, Solicitud, Valoracion
+from .models import OfertaMentor, Sesion, Solicitud, Valoracion
 
 
 class OfertaMentorForm(forms.ModelForm):
@@ -84,8 +84,6 @@ class ValoracionForm(forms.ModelForm):
             "comentario": "Comentario",
         }
         widgets = {
-            "estrellas": forms.RadioSelect(
-                choices=[(i, f"{i} estrella{'s' if i > 1 else ''}") for i in range(1, 6)]
-            ),
+            "estrellas": forms.RadioSelect(choices=[(i, f"{i} estrella{'s' if i > 1 else ''}") for i in range(1, 6)]),
             "comentario": forms.Textarea(attrs={"rows": 4}),
         }

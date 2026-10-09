@@ -8,6 +8,7 @@ from django.views.decorators.http import require_POST
 
 from cuentas.decorators import requiere_rol
 
+from .calendario import crear_evento_calendario
 from .forms import AceptarSolicitudForm, OfertaMentorForm, SolicitudForm, ValoracionForm
 from .models import Especialidad, OfertaMentor, Sesion, Solicitud, Valoracion
 
@@ -48,7 +49,9 @@ def buscar_mentores(request):
 @login_required
 def detalle_mentor(request, pk):
     oferta = get_object_or_404(
-        OfertaMentor.objects.select_related("perfil__usuario").prefetch_related("especialidades"),
+        OfertaMentor.objects.select_related("perfil__usuario").prefetch_related(
+            "especialidades"
+        ),
         pk=pk,
         activo=True,
     )
@@ -67,7 +70,7 @@ def detalle_mentor(request, pk):
 @login_required
 @requiere_rol(mentor=True)
 def editar_oferta(request):
-    oferta, _creada = OfertaMentor.objects.get_or_create(perfil=request.user.perfil)
+    oferta, _ = OfertaMentor.objects.get_or_create(perfil=request.user.perfil)
     form = OfertaMentorForm(request.POST or None, instance=oferta)
     if request.method == "POST" and form.is_valid():
         form.save()
@@ -123,10 +126,15 @@ def solicitudes(request):
         enviadas = Solicitud.objects.filter(aprendiz=request.user).select_related(
             "mentor", "especialidad"
         )
+    aceptar_form = AceptarSolicitudForm()
     return render(
         request,
         "mentorias/solicitudes.html",
-        {"recibidas": recibidas, "enviadas": enviadas},
+        {
+            "recibidas": recibidas,
+            "enviadas": enviadas,
+            "aceptar_form": aceptar_form,
+        },
     )
 
 
@@ -140,7 +148,7 @@ def aceptar_solicitud(request, pk):
     if request.method == "POST" and form.is_valid():
         inicio = form.cleaned_data["inicio"]
         minutos = int(form.cleaned_data["duracion_minutos"])
-        Sesion.objects.create(
+        sesion = Sesion.objects.create(
             solicitud=solicitud,
             mentor=solicitud.mentor,
             aprendiz=solicitud.aprendiz,
@@ -150,7 +158,15 @@ def aceptar_solicitud(request, pk):
         )
         solicitud.estado = Solicitud.Estado.ACEPTADA
         solicitud.save(update_fields=["estado"])
-        messages.success(request, "Sesión agendada.")
+        creado = crear_evento_calendario(sesion)
+        if creado:
+            messages.success(request, "Sesión agendada y añadida a Google Calendar.")
+        else:
+            messages.success(
+                request,
+                "Sesión agendada. No se pudo sincronizar con Google Calendar "
+                "(configura las credenciales o vuelve a iniciar sesión con Google).",
+            )
         return redirect("mentorias:sesiones")
     return render(
         request,

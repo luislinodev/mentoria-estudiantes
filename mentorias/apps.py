@@ -2,4 +2,6 @@ from django.apps import AppConfig
 
 
 class MentoriasConfig(AppConfig):
-    name = 'mentorias'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "mentorias"
+    verbose_name = "Mentorías"

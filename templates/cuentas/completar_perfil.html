@@ -1,63 +1,29 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block title %}Completar perfil{% endblock %}
 
 {% block content %}
-<h1>Completa tu perfil</h1>
-<p>Elige tu rol y tus datos académicos. Puedes ser mentor, aprendiz o ambos.</p>
-
-<form method="post" enctype="multipart/form-data">
-  {% csrf_token %}
-
-  {% if form.non_field_errors %}
-    <ul>
-      {% for error in form.non_field_errors %}
-        <li>{{ error }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
-
-  <p>
-    <label for="{{ form.first_name.id_for_label }}">Nombre</label><br>
-    {{ form.first_name }}
-    {{ form.first_name.errors }}
-  </p>
-  <p>
-    <label for="{{ form.last_name.id_for_label }}">Apellidos</label><br>
-    {{ form.last_name }}
-    {{ form.last_name.errors }}
-  </p>
-  <p>
-    <label for="{{ form.ciclo.id_for_label }}">Ciclo académico</label><br>
-    {{ form.ciclo }}
-    {{ form.ciclo.errors }}
-  </p>
-  <p>
-    <label for="{{ form.carrera.id_for_label }}">Carrera</label><br>
-    {{ form.carrera }}
-    {{ form.carrera.errors }}
-  </p>
-  <p>
-    <label for="{{ form.biografia.id_for_label }}">Biografía</label><br>
-    {{ form.biografia }}
-    {{ form.biografia.errors }}
-  </p>
-  <p>
-    <label for="{{ form.foto.id_for_label }}">Foto de perfil</label><br>
-    {{ form.foto }}
-    {{ form.foto.errors }}
-  </p>
-  <p>
-    {{ form.es_mentor }}
-    <label for="{{ form.es_mentor.id_for_label }}">Quiero ser mentor</label>
-    {{ form.es_mentor.errors }}
-  </p>
-  <p>
-    {{ form.es_aprendiz }}
-    <label for="{{ form.es_aprendiz.id_for_label }}">Quiero ser aprendiz</label>
-    {{ form.es_aprendiz.errors }}
-  </p>
-
-  <button type="submit">Guardar perfil</button>
-</form>
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card card-plataforma">
+      <div class="card-body p-4 p-lg-5">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-tile">
+            <i class="bi bi-person-badge fs-4" aria-hidden="true"></i>
+          </div>
+          <div>
+            <h1 class="h3 mb-0">Completa tu perfil</h1>
+          </div>
+        </div>
+        <p class="text-secondary">Elige tu rol y tus datos académicos. Puedes ser mentor, aprendiz o ambos.</p>
+        <form method="post" enctype="multipart/form-data" novalidate>
+          {% csrf_token %}
+          {{ form|crispy }}
+          <button type="submit" class="btn btn-primary">Guardar perfil</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

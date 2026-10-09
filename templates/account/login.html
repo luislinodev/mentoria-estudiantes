@@ -1,27 +1,48 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load socialaccount %}
+{% load crispy_forms_tags %}
 
 {% block title %}Iniciar sesión{% endblock %}
 
 {% block content %}
-<h1>Iniciar sesión</h1>
-<p>Accede con tu cuenta de Google para crear tu perfil de mentor o aprendiz.</p>
+<div class="row justify-content-center">
+  <div class="col-md-7 col-lg-5">
+    <div class="card card-plataforma">
+      <div class="card-body p-4 p-lg-5">
+        <div class="text-center mb-4">
+          <div class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-3 icon-tile mb-3">
+            <i class="bi bi-mortarboard-fill fs-4" aria-hidden="true"></i>
+          </div>
+          <h1 class="h3 mb-2">Iniciar sesión</h1>
+          <p class="text-secondary mb-0">Accede para buscar mentores, gestionar solicitudes y agendar sesiones.</p>
+        </div>
 
-{% if google_oauth_configurado %}
-  <p><a href="{% provider_login_url 'google' %}">Continuar con Google</a></p>
-{% else %}
-  <p>
-    El inicio de sesión con Google no está configurado. Agrega
-    <code>GOOGLE_CLIENT_ID</code> y <code>GOOGLE_CLIENT_SECRET</code> en el archivo <code>.env</code>.
-  </p>
-{% endif %}
+        {% if google_oauth_configurado %}
+          <a class="btn btn-outline-dark w-100 py-2 mb-3" href="{% provider_login_url 'google' %}">
+            <i class="bi bi-google me-2" aria-hidden="true"></i>Continuar con Google
+          </a>
+        {% else %}
+          <div class="alert alert-warning border-0" role="status">
+            El inicio de sesión con Google no está configurado. Agrega
+            <code>GOOGLE_CLIENT_ID</code> y <code>GOOGLE_CLIENT_SECRET</code> en el archivo <code>.env</code>.
+          </div>
+        {% endif %}
 
-{% if debug_mode %}
-  <h2>Acceso de desarrollo</h2>
-  <form method="post">
-    {% csrf_token %}
-    {% include "includes/campos_formulario.html" %}
-    <button type="submit">Entrar con correo</button>
-  </form>
-{% endif %}
+        {% if debug_mode %}
+          <div class="d-flex align-items-center gap-2 my-4">
+            <hr class="flex-grow-1">
+            <span class="small text-secondary text-nowrap">Acceso de desarrollo</span>
+            <hr class="flex-grow-1">
+          </div>
+          <form method="post" novalidate>
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-primary w-100">Entrar con correo</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

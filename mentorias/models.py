@@ -113,6 +113,9 @@ class Sesion(models.Model):
     inicio = models.DateTimeField()
     fin = models.DateTimeField()
     estado = models.CharField(max_length=20, choices=Estado, default=Estado.PROGRAMADA)
+    google_event_id = models.CharField(max_length=255, blank=True)
+    enlace_meet = models.URLField(blank=True)
+    recordatorio_enviado = models.BooleanField(default=False)
     notas = models.TextField(blank=True)
     creado = models.DateTimeField(auto_now_add=True)
 

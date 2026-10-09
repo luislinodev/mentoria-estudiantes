@@ -1,0 +1,13 @@
+{% if estado == "pendiente" %}
+  <span class="badge rounded-pill text-bg-warning">{{ etiqueta }}</span>
+{% elif estado == "aceptada" or estado == "completada" %}
+  <span class="badge rounded-pill text-bg-success">{{ etiqueta }}</span>
+{% elif estado == "rechazada" %}
+  <span class="badge rounded-pill text-bg-danger">{{ etiqueta }}</span>
+{% elif estado == "programada" %}
+  <span class="badge rounded-pill text-bg-primary">{{ etiqueta }}</span>
+{% elif estado == "cancelada" %}
+  <span class="badge rounded-pill text-bg-secondary">{{ etiqueta }}</span>
+{% else %}
+  <span class="badge rounded-pill text-bg-light text-dark">{{ etiqueta }}</span>
+{% endif %}

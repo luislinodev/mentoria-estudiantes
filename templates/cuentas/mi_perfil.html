@@ -3,31 +3,53 @@
 {% block title %}Mi perfil{% endblock %}
 
 {% block content %}
-<h1>{{ perfil.nombre_completo }}</h1>
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb mb-0">
+    <li class="breadcrumb-item"><a href="{% url 'cuentas:panel' %}">Panel</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Mi perfil</li>
+  </ol>
+</nav>
 
-{% if perfil.avatar_url %}
-  <p><img src="{{ perfil.avatar_url }}" alt="Foto de {{ perfil.nombre_completo }}" width="96" height="96"></p>
-{% endif %}
-
-<p>
-  {% if perfil.carrera %}{{ perfil.carrera }}{% else %}Carrera no indicada{% endif %}
-  {% if perfil.ciclo %} · Ciclo {{ perfil.ciclo }}{% endif %}
-</p>
-
-<p>
-  {% if perfil.es_mentor %}Mentor{% endif %}
-  {% if perfil.es_mentor and perfil.es_aprendiz %} y {% endif %}
-  {% if perfil.es_aprendiz %}Aprendiz{% endif %}
-</p>
-
-{% if perfil.biografia %}
-  <p>{{ perfil.biografia }}</p>
-{% endif %}
-
-<p>
-  <a href="{% url 'cuentas:completar_perfil' %}">Editar perfil</a>
-  {% if perfil.es_mentor %}
-    · <a href="{% url 'mentorias:editar_oferta' %}">Editar oferta</a>
-  {% endif %}
-</p>
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <article class="card card-plataforma">
+      <div class="card-body p-4 p-lg-5">
+        <div class="d-flex gap-3 align-items-start mb-4">
+          {% include "includes/avatar.html" with perfil=perfil size=88 %}
+          <div>
+            <h1 class="h3 mb-1">{{ perfil.nombre_completo }}</h1>
+            <p class="text-secondary mb-2">
+              {{ perfil.carrera }}{% if perfil.ciclo %} · Ciclo {{ perfil.ciclo }}{% endif %}
+            </p>
+            {% if perfil.es_mentor %}<span class="badge rounded-pill text-bg-primary">Mentor</span>{% endif %}
+            {% if perfil.es_aprendiz %}<span class="badge rounded-pill text-bg-secondary">Aprendiz</span>{% endif %}
+          </div>
+        </div>
+        {% if perfil.biografia %}
+          <p class="mb-4">{{ perfil.biografia }}</p>
+        {% endif %}
+        {% if perfil.es_mentor and perfil.oferta %}
+          <hr>
+          <h2 class="h5">Oferta de mentoría</h2>
+          <p>{{ perfil.oferta.temas|default:"Sin temas definidos aún." }}</p>
+          <p class="text-secondary mb-2">
+            <i class="bi bi-clock me-1" aria-hidden="true"></i>
+            Disponibilidad: {{ perfil.oferta.disponibilidad|default:"No indicada" }}
+          </p>
+          <p class="mb-4" aria-label="Calificación promedio {{ perfil.oferta.calificacion_promedio }} de 5">
+            {% include "includes/estrellas.html" with promedio=perfil.oferta.calificacion_promedio total=perfil.oferta.total_valoraciones %}
+          </p>
+        {% endif %}
+        <div class="d-flex flex-wrap gap-2">
+          <a class="btn btn-primary" href="{% url 'cuentas:completar_perfil' %}">
+            <i class="bi bi-pencil me-1" aria-hidden="true"></i>Editar perfil
+          </a>
+          {% if perfil.es_mentor %}
+            <a class="btn btn-outline-primary" href="{% url 'mentorias:editar_oferta' %}">Editar oferta</a>
+          {% endif %}
+        </div>
+      </div>
+    </article>
+  </div>
+</div>
 {% endblock %}

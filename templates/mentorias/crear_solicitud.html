@@ -1,18 +1,38 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block title %}Solicitar mentoría{% endblock %}
 
 {% block content %}
-<p>
-  <a href="{% url 'mentorias:buscar' %}">Buscar mentores</a>
-  · <a href="{% url 'mentorias:detalle_mentor' oferta.pk %}">{{ oferta.perfil.nombre_completo }}</a>
-</p>
-<h1>Solicitar mentoría</h1>
-<p>Describe en qué necesitas apoyo de {{ oferta.perfil.nombre_completo }}.</p>
-<form method="post">
-  {% csrf_token %}
-  {% include "includes/campos_formulario.html" %}
-  <button type="submit">Enviar solicitud</button>
-  <a href="{% url 'mentorias:detalle_mentor' oferta.pk %}">Cancelar</a>
-</form>
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb mb-0">
+    <li class="breadcrumb-item"><a href="{% url 'mentorias:buscar' %}">Buscar mentores</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'mentorias:detalle_mentor' oferta.pk %}">{{ oferta.perfil.nombre_completo }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Solicitar</li>
+  </ol>
+</nav>
+
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card card-plataforma">
+      <div class="card-body p-4 p-lg-5">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-tile">
+            <i class="bi bi-send fs-4" aria-hidden="true"></i>
+          </div>
+          <h1 class="h3 mb-0">Solicitar mentoría</h1>
+        </div>
+        <p class="text-secondary">Describe en qué necesitas apoyo de {{ oferta.perfil.nombre_completo }}. El mentor aceptará o rechazará tu pedido.</p>
+        <form method="post" novalidate>
+          {% csrf_token %}
+          {{ form|crispy }}
+          <div class="d-flex flex-wrap gap-2">
+            <button type="submit" class="btn btn-primary">Enviar solicitud</button>
+            <a class="btn btn-outline-secondary" href="{% url 'mentorias:detalle_mentor' oferta.pk %}">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

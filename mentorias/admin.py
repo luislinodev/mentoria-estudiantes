@@ -26,7 +26,7 @@ class SolicitudAdmin(admin.ModelAdmin):
 
 @admin.register(Sesion)
 class SesionAdmin(admin.ModelAdmin):
-    list_display = ("mentor", "aprendiz", "inicio", "estado")
+    list_display = ("mentor", "aprendiz", "inicio", "estado", "recordatorio_enviado")
     list_filter = ("estado",)
     search_fields = ("mentor__email", "aprendiz__email")
 

@@ -1,17 +1,37 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block title %}Valorar mentoría{% endblock %}
 
 {% block content %}
-<p><a href="{% url 'mentorias:sesiones' %}">Sesiones</a></p>
-<h1>Valorar la sesión</h1>
-<p>
-  Cuéntanos cómo te fue con {{ sesion.mentor.get_full_name|default:sesion.mentor.email }}
-  en {{ sesion.solicitud.especialidad }}.
-</p>
-<form method="post">
-  {% csrf_token %}
-  {% include "includes/campos_formulario.html" %}
-  <button type="submit">Enviar valoración</button>
-</form>
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb mb-0">
+    <li class="breadcrumb-item"><a href="{% url 'mentorias:sesiones' %}">Sesiones</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Valorar</li>
+  </ol>
+</nav>
+
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card card-plataforma">
+      <div class="card-body p-4 p-lg-5">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-tile">
+            <i class="bi bi-star fs-4" aria-hidden="true"></i>
+          </div>
+          <h1 class="h3 mb-0">Valorar la sesión</h1>
+        </div>
+        <p class="text-secondary">
+          Cuéntanos cómo te fue con {{ sesion.mentor.get_full_name|default:sesion.mentor.email }}
+          en {{ sesion.solicitud.especialidad }}.
+        </p>
+        <form method="post" novalidate>
+          {% csrf_token %}
+          {{ form|crispy }}
+          <button type="submit" class="btn btn-primary">Enviar valoración</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

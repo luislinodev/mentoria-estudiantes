@@ -5,6 +5,7 @@ Django settings for config project.
 import os
 from pathlib import Path
 
+from django.contrib.messages import constants as message_constants
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +21,7 @@ def env_bool(name: str, default: bool = False) -> bool:
 
 SECRET_KEY = os.getenv(
     "SECRET_KEY",
-    "django-insecure-!6$zx(8h$ai4-_5o811$#nwon*f^!x_qxij&zch!i=f+tcwf)u",
+    "django-insecure-03b*z0wm#(&(1aejz1w3@-9xhb_c_bzqn4$mc46!%1%ph$za7r",
 )
 
 DEBUG = env_bool("DEBUG", True)
@@ -30,8 +31,10 @@ ALLOWED_HOSTS = [
     for host in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
     if host.strip()
 ]
-if DEBUG and "testserver" not in ALLOWED_HOSTS:
-    ALLOWED_HOSTS.append("testserver")
+if DEBUG:
+    for extra in ("testserver",):
+        if extra not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(extra)
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "").strip()
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "").strip()
@@ -46,10 +49,13 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
+    "django.contrib.humanize",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
+    "crispy_forms",
+    "crispy_bootstrap5",
     "cuentas.apps.CuentasConfig",
     "mentorias.apps.MentoriasConfig",
 ]
@@ -94,7 +100,9 @@ DATABASES = {
 }
 
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
@@ -106,6 +114,8 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -123,14 +133,16 @@ LOGIN_URL = "account_login"
 LOGIN_REDIRECT_URL = "cuentas:despues_login"
 LOGOUT_REDIRECT_URL = "cuentas:inicio"
 ACCOUNT_LOGOUT_REDIRECT_URL = "cuentas:inicio"
-ACCOUNT_LOGOUT_ON_GET = False
+ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
+ACCOUNT_SESSION_REMEMBER = True
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_QUERY_EMAIL = True
-SOCIALACCOUNT_LOGIN_ON_GET = False
+SOCIALACCOUNT_STORE_TOKENS = True
+SOCIALACCOUNT_LOGIN_ON_GET = True
 SOCIALACCOUNT_ONLY = not DEBUG
 SOCIALACCOUNT_ADAPTER = "cuentas.adapters.AdaptadorSocial"
 
@@ -139,9 +151,11 @@ SOCIALACCOUNT_PROVIDERS = {
         "SCOPE": [
             "profile",
             "email",
+            "https://www.googleapis.com/auth/calendar.events",
         ],
         "AUTH_PARAMS": {
-            "access_type": "online",
+            "access_type": "offline",
+            "prompt": "consent",
         },
         "APP": {
             "client_id": GOOGLE_CLIENT_ID,
@@ -152,8 +166,29 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
 MAILERS = {
     "default": {
         "BACKEND": "django.core.mail.backends.console.EmailBackend",
     },
 }
+DEFAULT_FROM_EMAIL = "Mentoría Estudiantes <no-reply@localhost>"
+
+MESSAGE_TAGS = {
+    message_constants.DEBUG: "secondary",
+    message_constants.INFO: "info",
+    message_constants.SUCCESS: "success",
+    message_constants.WARNING: "warning",
+    message_constants.ERROR: "danger",
+}
+
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True

@@ -3,10 +3,13 @@
 {% block title %}Error de autenticación{% endblock %}
 
 {% block content %}
-<h1>No se pudo iniciar sesión</h1>
-<p>
-  No se pudo completar el inicio de sesión con Google. Verifica las credenciales OAuth y la URI de redirección
-  <code>http://127.0.0.1:8000/accounts/google/login/callback/</code>.
-</p>
-<p><a href="{% url 'account_login' %}">Volver a intentar</a></p>
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="alert alert-danger shadow-sm border-0" role="alert">
+      No se pudo completar el inicio de sesión con Google. Verifica las credenciales OAuth y la URI de redirección
+      <code>http://127.0.0.1:8000/accounts/google/login/callback/</code>.
+    </div>
+    <a class="btn btn-primary" href="{% url 'account_login' %}">Volver a intentar</a>
+  </div>
+</div>
 {% endblock %}

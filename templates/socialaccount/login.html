@@ -1,12 +1,24 @@
 {% extends "base.html" %}
+{% load socialaccount %}
 
 {% block title %}Conectar con Google{% endblock %}
 
 {% block content %}
-<h1>Continuar con Google</h1>
-<p>Vas a autorizar el acceso a tu cuenta de Google para entrar a la plataforma.</p>
-<form method="post">
-  {% csrf_token %}
-  <button type="submit">Continuar</button>
-</form>
+<div class="row justify-content-center">
+  <div class="col-md-7 col-lg-5">
+    <div class="card card-plataforma">
+      <div class="card-body p-4 p-lg-5 text-center">
+        <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-tile mb-3">
+          <i class="bi bi-google fs-4" aria-hidden="true"></i>
+        </div>
+        <h1 class="h4">Continuar con Google</h1>
+        <p class="text-secondary">Vas a autorizar el acceso a tu cuenta de Google y, si lo permites, a Calendar para agendar sesiones.</p>
+        <form method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-dark w-100 py-2">Continuar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

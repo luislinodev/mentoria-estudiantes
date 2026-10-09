@@ -13,18 +13,26 @@ ESPECIALIDADES = [
 
 def cargar(apps, schema_editor):
     Especialidad = apps.get_model("mentorias", "Especialidad")
+    Site = apps.get_model("sites", "Site")
     for nombre, descripcion in ESPECIALIDADES:
-        Especialidad.objects.get_or_create(nombre=nombre, defaults={"descripcion": descripcion})
+        Especialidad.objects.get_or_create(
+            nombre=nombre, defaults={"descripcion": descripcion}
+        )
+    Site.objects.update_or_create(
+        pk=1,
+        defaults={"domain": "127.0.0.1:8000", "name": "Mentoría Estudiantes"},
+    )
 
 
 def vaciar(apps, schema_editor):
     Especialidad = apps.get_model("mentorias", "Especialidad")
-    Especialidad.objects.filter(nombre__in=[nombre for nombre, _descripcion in ESPECIALIDADES]).delete()
+    Especialidad.objects.filter(nombre__in=[n for n, _ in ESPECIALIDADES]).delete()
 
 
 class Migration(migrations.Migration):
     dependencies = [
         ("mentorias", "0001_initial"),
+        ("sites", "0002_alter_domain_unique"),
     ]
 
     operations = [

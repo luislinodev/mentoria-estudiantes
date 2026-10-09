@@ -3,31 +3,57 @@
 {% block title %}Sesiones{% endblock %}
 
 {% block content %}
-<h1>Agenda de sesiones</h1>
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb mb-0">
+    <li class="breadcrumb-item"><a href="{% url 'cuentas:panel' %}">Panel</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Sesiones</li>
+  </ol>
+</nav>
+
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+  <div>
+    <h1 class="h3 mb-1">Agenda de sesiones</h1>
+    <p class="text-secondary mb-0">Consulta fechas, participantes y el estado de cada mentoría.</p>
+  </div>
+</div>
+
 {% if sesiones %}
-  <table>
-    <thead>
-      <tr>
-        <th>Fecha</th>
-        <th>Especialidad</th>
-        <th>Mentor</th>
-        <th>Aprendiz</th>
-        <th>Estado</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for sesion in sesiones %}
+  <div class="table-responsive card card-plataforma">
+    <table class="table table-hover align-middle mb-0 table-plataforma">
+      <thead class="table-light">
         <tr>
-          <td><a href="{% url 'mentorias:detalle_sesion' sesion.pk %}">{{ sesion.inicio|date:"d/m/Y H:i" }}</a></td>
-          <td>{{ sesion.solicitud.especialidad }}</td>
-          <td>{{ sesion.mentor.get_full_name|default:sesion.mentor.email }}</td>
-          <td>{{ sesion.aprendiz.get_full_name|default:sesion.aprendiz.email }}</td>
-          <td>{{ sesion.get_estado_display }}</td>
+          <th scope="col">Fecha</th>
+          <th scope="col">Especialidad</th>
+          <th scope="col">Participantes</th>
+          <th scope="col">Estado</th>
         </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {% for sesion in sesiones %}
+          <tr>
+            <td>
+              <a class="fw-semibold text-decoration-none" href="{% url 'mentorias:detalle_sesion' sesion.pk %}">
+                {{ sesion.inicio|date:"d/m/Y H:i" }}
+              </a>
+            </td>
+            <td>{{ sesion.solicitud.especialidad }}</td>
+            <td>
+              {{ sesion.mentor.get_full_name|default:sesion.mentor.email }}
+              ·
+              {{ sesion.aprendiz.get_full_name|default:sesion.aprendiz.email }}
+            </td>
+            <td>{% include "includes/badge_estado.html" with estado=sesion.estado etiqueta=sesion.get_estado_display %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 {% else %}
-  <p>No tienes sesiones.</p>
+  <div class="card card-plataforma">
+    <div class="card-body text-center py-5">
+      <i class="bi bi-calendar-x display-5 text-secondary d-block mb-3" aria-hidden="true"></i>
+      <p class="text-secondary mb-0">No hay sesiones registradas.</p>
+    </div>
+  </div>
 {% endif %}
 {% endblock %}

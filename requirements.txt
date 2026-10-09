@@ -1,7 +1,11 @@
-asgiref==3.12.1
-Django==6.1.1
-sqlparse==0.6.0
-django-allauth>=65.0
+Django>=6.1,<6.2
 python-dotenv>=1.0
+django-allauth>=65.0
+django-crispy-forms>=2.3
+crispy-bootstrap5>=2024.10
+google-api-python-client>=2.150
+google-auth>=2.36
+google-auth-httplib2>=0.2
 Pillow>=11.0
 requests>=2.32
+cryptography>=44.0

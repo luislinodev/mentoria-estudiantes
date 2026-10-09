@@ -1,0 +1,9 @@
+<span class="text-warning" aria-hidden="true">
+  {% for _ in "12345" %}
+    <i class="bi {% if forloop.counter <= promedio %}bi-star-fill{% else %}bi-star{% endif %}"></i>
+  {% endfor %}
+</span>
+<span class="ms-1">{{ promedio }}</span>
+{% if total %}
+  <span class="text-muted">({{ total }})</span>
+{% endif %}

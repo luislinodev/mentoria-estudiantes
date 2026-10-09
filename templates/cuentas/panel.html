@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Panel{% endblock %}
+
+{% block content %}
+<section class="card border-0 shadow-sm mb-4 overflow-hidden">
+  <div class="card-body p-4 p-lg-5">
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+      <div class="d-flex gap-3 align-items-center">
+        {% include "includes/avatar.html" with perfil=perfil size=72 %}
+        <div>
+          <p class="text-primary small fw-semibold text-uppercase mb-1">Tu espacio</p>
+          <h1 class="h3 mb-1">Hola, {{ perfil.nombre_completo }}</h1>
+          <p class="text-secondary mb-0">
+            {% if perfil.es_mentor %}<span class="badge rounded-pill text-bg-primary me-1">Mentor</span>{% endif %}
+            {% if perfil.es_aprendiz %}<span class="badge rounded-pill text-bg-secondary me-1">Aprendiz</span>{% endif %}
+            {% if perfil.carrera %}{{ perfil.carrera }}{% endif %}
+            {% if perfil.ciclo %}· Ciclo {{ perfil.ciclo }}{% endif %}
+          </p>
+        </div>
+      </div>
+      <div class="d-flex flex-wrap gap-2">
+        {% if perfil.es_aprendiz %}
+          <a class="btn btn-primary" href="{% url 'mentorias:buscar' %}">
+            <i class="bi bi-search me-1" aria-hidden="true"></i>Buscar mentores
+          </a>
+        {% endif %}
+        {% if perfil.es_mentor %}
+          <a class="btn btn-outline-primary" href="{% url 'mentorias:editar_oferta' %}">
+            <i class="bi bi-briefcase me-1" aria-hidden="true"></i>Mi oferta
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <a class="card card-plataforma card-hover h-100 text-decoration-none text-body" href="{% url 'mentorias:sesiones' %}">
+      <div class="card-body p-4 d-flex align-items-center gap-3">
+        <span class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-tile">
+          <i class="bi bi-calendar-event fs-5" aria-hidden="true"></i>
+        </span>
+        <div>
+          <div class="fw-semibold">Agenda</div>
+          <div class="small text-secondary">Revisa tus sesiones programadas</div>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a class="card card-plataforma card-hover h-100 text-decoration-none text-body" href="{% url 'mentorias:solicitudes' %}">
+      <div class="card-body p-4 d-flex align-items-center gap-3">
+        <span class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-tile">
+          <i class="bi bi-inbox fs-5" aria-hidden="true"></i>
+        </span>
+        <div>
+          <div class="fw-semibold">Solicitudes</div>
+          <div class="small text-secondary">Gestiona pedidos de mentoría</div>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a class="card card-plataforma card-hover h-100 text-decoration-none text-body" href="{% url 'cuentas:mi_perfil' %}">
+      <div class="card-body p-4 d-flex align-items-center gap-3">
+        <span class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-tile">
+          <i class="bi bi-person fs-5" aria-hidden="true"></i>
+        </span>
+        <div>
+          <div class="fw-semibold">Perfil</div>
+          <div class="small text-secondary">Actualiza tus datos y tu rol</div>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <section class="card card-plataforma h-100" aria-labelledby="prox-sesiones">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 id="prox-sesiones" class="h5 mb-0">
+            <i class="bi bi-calendar-event text-primary me-2" aria-hidden="true"></i>Próximas sesiones
+          </h2>
+          <a class="small text-decoration-none fw-semibold" href="{% url 'mentorias:sesiones' %}">Ver agenda</a>
+        </div>
+        {% if proximas %}
+          <div class="list-group list-group-flush">
+            {% for sesion in proximas %}
+              <a href="{% url 'mentorias:detalle_sesion' sesion.pk %}" class="list-group-item list-group-item-action px-0 d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="fw-semibold">{{ sesion.solicitud.especialidad }}</div>
+                  <div class="small text-secondary">{{ sesion.inicio|date:"d/m/Y H:i" }}</div>
+                </div>
+                <i class="bi bi-chevron-right text-secondary" aria-hidden="true"></i>
+              </a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="text-center py-4">
+            <i class="bi bi-calendar-x fs-2 text-secondary d-block mb-2" aria-hidden="true"></i>
+            <p class="text-secondary mb-0">Aún no tienes sesiones programadas.</p>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+  <div class="col-lg-6">
+    {% if perfil.es_mentor %}
+      <section class="card card-plataforma mb-4" aria-labelledby="sol-pend">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 id="sol-pend" class="h5 mb-0">
+              <i class="bi bi-inbox text-primary me-2" aria-hidden="true"></i>Solicitudes pendientes
+            </h2>
+            <a class="small text-decoration-none fw-semibold" href="{% url 'mentorias:solicitudes' %}">Ver todas</a>
+          </div>
+          {% if solicitudes_pendientes %}
+            <ul class="list-group list-group-flush">
+              {% for s in solicitudes_pendientes %}
+                <li class="list-group-item px-0 d-flex justify-content-between align-items-start gap-2">
+                  <div>
+                    <div class="fw-semibold">{{ s.aprendiz.get_full_name|default:s.aprendiz.email }}</div>
+                    <div class="small text-secondary">{{ s.especialidad }}</div>
+                  </div>
+                  {% include "includes/badge_estado.html" with estado=s.estado etiqueta=s.get_estado_display %}
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-secondary mb-0">No hay solicitudes nuevas.</p>
+          {% endif %}
+        </div>
+      </section>
+    {% endif %}
+    {% if perfil.es_aprendiz %}
+      <section class="card card-plataforma" aria-labelledby="sol-env">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 id="sol-env" class="h5 mb-0">
+              <i class="bi bi-send text-primary me-2" aria-hidden="true"></i>Tus solicitudes
+            </h2>
+            <a class="small text-decoration-none fw-semibold" href="{% url 'mentorias:solicitudes' %}">Ver todas</a>
+          </div>
+          {% if solicitudes_enviadas %}
+            <ul class="list-group list-group-flush">
+              {% for s in solicitudes_enviadas %}
+                <li class="list-group-item px-0 d-flex justify-content-between align-items-start gap-2">
+                  <div>
+                    <div class="fw-semibold">{{ s.mentor.get_full_name|default:s.mentor.email }}</div>
+                    <div class="small text-secondary">{{ s.especialidad }}</div>
+                  </div>
+                  {% include "includes/badge_estado.html" with estado=s.estado etiqueta=s.get_estado_display %}
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-secondary mb-0">Todavía no has contactado a un mentor.</p>
+          {% endif %}
+        </div>
+      </section>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

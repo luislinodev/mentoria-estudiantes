@@ -3,33 +3,65 @@
 {% block title %}Sesión {{ sesion.inicio|date:"d/m/Y" }}{% endblock %}
 
 {% block content %}
-<p><a href="{% url 'mentorias:sesiones' %}">Sesiones</a></p>
-<h1>{{ sesion.solicitud.especialidad }}</h1>
-<p>Estado: {{ sesion.get_estado_display }}</p>
-<p>Inicio: {{ sesion.inicio|date:"d/m/Y H:i" }}</p>
-<p>Fin: {{ sesion.fin|date:"d/m/Y H:i" }}</p>
-<p>Mentor: {{ sesion.mentor.get_full_name|default:sesion.mentor.email }}</p>
-<p>Aprendiz: {{ sesion.aprendiz.get_full_name|default:sesion.aprendiz.email }}</p>
-{% if sesion.notas %}
-  <p>Notas: {{ sesion.notas }}</p>
-{% endif %}
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb mb-0">
+    <li class="breadcrumb-item"><a href="{% url 'cuentas:panel' %}">Panel</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'mentorias:sesiones' %}">Sesiones</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ sesion.inicio|date:"d/m/Y" }}</li>
+  </ol>
+</nav>
 
-{% if sesion.estado == "programada" %}
-  <form method="post" action="{% url 'mentorias:completar_sesion' sesion.pk %}">
-    {% csrf_token %}
-    <button type="submit">Marcar como completada</button>
-  </form>
-  <form method="post" action="{% url 'mentorias:cancelar_sesion' sesion.pk %}">
-    {% csrf_token %}
-    <button type="submit">Cancelar sesión</button>
-  </form>
-{% endif %}
+<article class="card card-plataforma">
+  <div class="card-body p-4 p-lg-5">
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+      <div>
+        <p class="text-primary small fw-semibold text-uppercase mb-1">Detalle de sesión</p>
+        <h1 class="h3 mb-0">{{ sesion.solicitud.especialidad }}</h1>
+      </div>
+      {% include "includes/badge_estado.html" with estado=sesion.estado etiqueta=sesion.get_estado_display %}
+    </div>
+    <dl class="row mb-0">
+      <dt class="col-sm-3">Inicio</dt>
+      <dd class="col-sm-9">{{ sesion.inicio|date:"d/m/Y H:i" }}</dd>
+      <dt class="col-sm-3">Fin</dt>
+      <dd class="col-sm-9">{{ sesion.fin|date:"d/m/Y H:i" }}</dd>
+      <dt class="col-sm-3">Mentor</dt>
+      <dd class="col-sm-9">{{ sesion.mentor.get_full_name|default:sesion.mentor.email }}</dd>
+      <dt class="col-sm-3">Aprendiz</dt>
+      <dd class="col-sm-9">{{ sesion.aprendiz.get_full_name|default:sesion.aprendiz.email }}</dd>
+      {% if sesion.enlace_meet %}
+        <dt class="col-sm-3">Enlace</dt>
+        <dd class="col-sm-9">
+          <a class="btn btn-sm btn-outline-primary" href="{{ sesion.enlace_meet }}" rel="noopener noreferrer">
+            <i class="bi bi-camera-video me-1" aria-hidden="true"></i>Unirse a la reunión
+          </a>
+        </dd>
+      {% endif %}
+      {% if sesion.notas %}
+        <dt class="col-sm-3">Notas</dt>
+        <dd class="col-sm-9">{{ sesion.notas }}</dd>
+      {% endif %}
+    </dl>
 
-{% if sesion.estado == "completada" and user == sesion.aprendiz %}
-  {% if sesion.puede_valorarse %}
-    <p><a href="{% url 'mentorias:valorar' sesion.pk %}">Dejar valoración</a></p>
-  {% else %}
-    <p>Ya valoraste esta mentoría.</p>
-  {% endif %}
-{% endif %}
+    <div class="d-flex flex-wrap gap-2 mt-4">
+      {% if sesion.estado == "programada" %}
+        <form method="post" action="{% url 'mentorias:completar_sesion' sesion.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary">Marcar como completada</button>
+        </form>
+        <form method="post" action="{% url 'mentorias:cancelar_sesion' sesion.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-danger">Cancelar sesión</button>
+        </form>
+      {% endif %}
+      {% if sesion.estado == "completada" and user == sesion.aprendiz %}
+        {% if sesion.puede_valorarse %}
+          <a class="btn btn-primary" href="{% url 'mentorias:valorar' sesion.pk %}">Dejar valoración</a>
+        {% else %}
+          <p class="mb-0 text-secondary">Ya valoraste esta mentoría.</p>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</article>
 {% endblock %}

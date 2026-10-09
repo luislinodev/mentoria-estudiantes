@@ -1,0 +1,129 @@
+:root {
+  --bs-primary: #0f766e;
+  --bs-primary-rgb: 15, 118, 110;
+  --bs-primary-text-emphasis: #134e4a;
+  --bs-primary-bg-subtle: #ccfbf1;
+  --bs-primary-border-subtle: #5eead4;
+  --bs-dark: #0f172a;
+  --bs-dark-rgb: 15, 23, 42;
+  --bs-body-bg: #f1f5f9;
+  --bs-body-color: #0f172a;
+  --bs-secondary-color: #64748b;
+  --bs-link-color: #0f766e;
+  --bs-link-color-rgb: 15, 118, 110;
+  --bs-link-hover-color: #115e59;
+  --bs-link-hover-color-rgb: 17, 94, 89;
+  --bs-focus-ring-color: rgba(15, 118, 110, 0.25);
+  --bs-border-radius: 0.85rem;
+  --bs-border-radius-sm: 0.55rem;
+  --bs-border-radius-lg: 1.15rem;
+  --bs-box-shadow-sm: 0 0.35rem 1.15rem rgba(15, 23, 42, 0.06);
+  --bs-border-color: #e2e8f0;
+}
+
+.skip-link:focus {
+  position: absolute;
+  z-index: 1080;
+  left: 1rem;
+  top: 1rem;
+  padding: 0.5rem 1rem;
+  background: #fff;
+  color: var(--bs-dark);
+}
+
+.btn-primary {
+  --bs-btn-bg: #0f766e;
+  --bs-btn-border-color: #0f766e;
+  --bs-btn-hover-bg: #115e59;
+  --bs-btn-hover-border-color: #115e59;
+  --bs-btn-active-bg: #134e4a;
+  --bs-btn-active-border-color: #134e4a;
+  --bs-btn-disabled-bg: #0f766e;
+  --bs-btn-disabled-border-color: #0f766e;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: #0f766e;
+  --bs-btn-border-color: #0f766e;
+  --bs-btn-hover-bg: #0f766e;
+  --bs-btn-hover-border-color: #0f766e;
+  --bs-btn-active-bg: #115e59;
+  --bs-btn-active-border-color: #115e59;
+}
+
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  border-color: #0f766e;
+  box-shadow: 0 0 0 0.2rem rgba(15, 118, 110, 0.18);
+}
+
+.navbar-plataforma {
+  backdrop-filter: blur(12px);
+}
+
+.navbar-plataforma .nav-link {
+  color: #475569;
+  border-radius: 0.55rem;
+  padding: 0.45rem 0.85rem;
+}
+
+.navbar-plataforma .nav-link:hover,
+.navbar-plataforma .nav-link:focus {
+  color: #0f766e;
+  background: #f0fdfa;
+}
+
+.navbar-plataforma .nav-link.active {
+  font-weight: 600;
+  color: #0f766e;
+  background: #ccfbf1;
+}
+
+.card-plataforma {
+  border: 1px solid var(--bs-border-color);
+  box-shadow: var(--bs-box-shadow-sm);
+}
+
+.card-hover {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.75rem 1.75rem rgba(15, 23, 42, 0.1);
+}
+
+.icon-tile {
+  width: 3rem;
+  height: 3rem;
+}
+
+.icon-tile-lg {
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+.table-plataforma > :not(caption) > * > * {
+  padding: 0.95rem 1.15rem;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  color: #94a3b8;
+}
+
+.hero-preview {
+  background:
+    radial-gradient(circle at top right, rgba(94, 234, 212, 0.35), transparent 42%),
+    linear-gradient(180deg, #134e4a 0%, #0f766e 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-hover {
+    transition: none;
+  }
+
+  .card-hover:hover {
+    transform: none;
+  }
+}

@@ -3,7 +3,164 @@
 {% block title %}Inicio · Mentoría entre Estudiantes{% endblock %}
 
 {% block content %}
-<h1>Mentoría entre estudiantes</h1>
-<p>Entra con tu cuenta de Google y crea tu perfil de mentor, aprendiz o ambos.</p>
-<p><a href="{% url 'account_login' %}">Iniciar sesión</a></p>
+<section class="card border-0 shadow-sm overflow-hidden mb-5">
+  <div class="row g-0">
+    <div class="col-lg-7 p-4 p-lg-5">
+      <span class="badge rounded-pill text-bg-primary mb-3">Mentoría entre pares</span>
+      <h1 class="display-5 fw-semibold mb-3">Aprende con estudiantes que ya recorrieron el camino</h1>
+      <p class="lead text-secondary mb-4">
+        Encuentra mentores por especialidad, agenda sesiones y recibe orientación académica y profesional.
+      </p>
+      <div class="d-flex flex-wrap gap-2 mb-4">
+        <a class="btn btn-primary btn-lg px-4" href="{% url 'account_login' %}">
+          <i class="bi bi-box-arrow-in-right me-2" aria-hidden="true"></i>Entrar a la plataforma
+        </a>
+        <a class="btn btn-outline-secondary btn-lg px-4" href="#como-funciona">Ver el proceso</a>
+      </div>
+      <div class="row g-3 text-secondary small">
+        <div class="col-auto d-flex align-items-center gap-2">
+          <i class="bi bi-check-circle-fill text-primary" aria-hidden="true"></i>Búsqueda por especialidad
+        </div>
+        <div class="col-auto d-flex align-items-center gap-2">
+          <i class="bi bi-check-circle-fill text-primary" aria-hidden="true"></i>Agenda con recordatorios
+        </div>
+        <div class="col-auto d-flex align-items-center gap-2">
+          <i class="bi bi-check-circle-fill text-primary" aria-hidden="true"></i>Valoraciones reales
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-5 hero-preview text-white p-4 p-lg-5 d-flex flex-column justify-content-center">
+      <p class="text-uppercase small text-white-50 fw-semibold mb-3">Así se ve una mentoría</p>
+      <div class="card border-0 shadow bg-white text-dark">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center fw-semibold" style="width: 3rem; height: 3rem;" aria-hidden="true">LR</div>
+            <div>
+              <div class="fw-semibold">Lucía Ramírez</div>
+              <div class="small text-secondary">Desarrollo web · Ciclo 6</div>
+            </div>
+          </div>
+          <p class="small text-warning mb-3 mb-lg-3" aria-hidden="true">
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star"></i>
+            <span class="text-secondary ms-1">4.8</span>
+          </p>
+          <div class="d-flex flex-wrap gap-1 mb-3">
+            <span class="badge rounded-pill text-bg-light border">Programación</span>
+            <span class="badge rounded-pill text-bg-light border">Desarrollo web</span>
+          </div>
+          <p class="small text-secondary mb-0">Apoyo en proyectos, bases de datos y preparación profesional.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="como-funciona" class="mb-5">
+  <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+    <div>
+      <p class="text-primary fw-semibold small text-uppercase mb-1">Proceso</p>
+      <h2 class="h3 mb-0">Cómo funciona</h2>
+    </div>
+  </div>
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card card-plataforma h-100">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <span class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-tile">
+              <i class="bi bi-search fs-5" aria-hidden="true"></i>
+            </span>
+            <span class="badge text-bg-primary">Paso 1</span>
+          </div>
+          <h3 class="h5">Encuentra un mentor</h3>
+          <p class="text-secondary mb-0">Filtra por especialidad o palabra clave y revisa las valoraciones de otros estudiantes.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card card-plataforma h-100">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <span class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-tile">
+              <i class="bi bi-calendar-check fs-5" aria-hidden="true"></i>
+            </span>
+            <span class="badge text-bg-primary">Paso 2</span>
+          </div>
+          <h3 class="h5">Solicita y agenda</h3>
+          <p class="text-secondary mb-0">Envía un pedido con tu objetivo. El mentor confirma fecha y duración de la sesión.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card card-plataforma h-100">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <span class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-tile">
+              <i class="bi bi-star fs-5" aria-hidden="true"></i>
+            </span>
+            <span class="badge text-bg-primary">Paso 3</span>
+          </div>
+          <h3 class="h5">Aprende y valora</h3>
+          <p class="text-secondary mb-0">Al terminar, marca la sesión como completada y deja una calificación de 1 a 5 estrellas.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mb-5">
+  <p class="text-primary fw-semibold small text-uppercase mb-1">Comunidad</p>
+  <h2 class="h3 mb-4">Roles en la plataforma</h2>
+  <div class="row g-4">
+    <div class="col-md-4">
+      <article class="card card-plataforma h-100">
+        <div class="card-body p-4">
+          <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-tile mb-3">
+            <i class="bi bi-mortarboard fs-4" aria-hidden="true"></i>
+          </div>
+          <h3 class="h5">Aprendices</h3>
+          <p class="text-secondary mb-0">Estudiantes de ciclos iniciales que buscan orientación clara, cercana y práctica.</p>
+        </div>
+      </article>
+    </div>
+    <div class="col-md-4">
+      <article class="card card-plataforma h-100">
+        <div class="card-body p-4">
+          <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-tile mb-3">
+            <i class="bi bi-people fs-4" aria-hidden="true"></i>
+          </div>
+          <h3 class="h5">Mentores</h3>
+          <p class="text-secondary mb-0">Estudiantes avanzados que comparten experiencia académica y de desarrollo profesional.</p>
+        </div>
+      </article>
+    </div>
+    <div class="col-md-4">
+      <article class="card card-plataforma h-100">
+        <div class="card-body p-4">
+          <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-tile mb-3">
+            <i class="bi bi-shield-check fs-4" aria-hidden="true"></i>
+          </div>
+          <h3 class="h5">Administración</h3>
+          <p class="text-secondary mb-0">Supervisión de perfiles, especialidades y el buen uso de la plataforma.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="card border-0 bg-dark text-white overflow-hidden">
+  <div class="card-body p-4 p-lg-5 d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-4">
+    <div>
+      <h2 class="h3 mb-2">Empieza a conectar con un mentor</h2>
+      <p class="text-white-50 mb-0">Entra con tu cuenta y completa tu perfil para buscar apoyo o publicar tu oferta.</p>
+    </div>
+    <a class="btn btn-primary btn-lg px-4" href="{% url 'account_login' %}">
+      Iniciar sesión
+    </a>
+  </div>
+</section>
 {% endblock %}

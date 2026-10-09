@@ -3,43 +3,87 @@
 {% block title %}Buscar mentores{% endblock %}
 
 {% block content %}
-<h1>Buscar mentores</h1>
-<p>Filtra por especialidad o palabra clave.</p>
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb mb-0">
+    <li class="breadcrumb-item"><a href="{% url 'cuentas:panel' %}">Panel</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Buscar mentores</li>
+  </ol>
+</nav>
 
-<form method="get">
-  <p>
-    <label for="q">Palabra clave</label><br>
-    <input id="q" name="q" value="{{ q }}">
-  </p>
-  <p>
-    <label for="especialidad">Especialidad</label><br>
-    <select id="especialidad" name="especialidad">
-      <option value="">Todas</option>
-      {% for esp in especialidades %}
-        <option value="{{ esp.pk }}" {% if especialidad_id == esp.pk|stringformat:"s" %}selected{% endif %}>{{ esp.nombre }}</option>
-      {% endfor %}
-    </select>
-  </p>
-  <button type="submit">Filtrar</button>
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+  <div>
+    <h1 class="h3 mb-1">Buscar mentores</h1>
+    <p class="text-secondary mb-0">Filtra por especialidad o palabra clave para encontrar apoyo académico.</p>
+  </div>
+</div>
+
+<form method="get" class="card card-plataforma mb-4" role="search" aria-label="Filtro de mentores">
+  <div class="card-body row g-3 align-items-end">
+    <div class="col-md-5">
+      <label class="form-label" for="q">Palabra clave</label>
+      <div class="input-group">
+        <span class="input-group-text bg-white"><i class="bi bi-search" aria-hidden="true"></i></span>
+        <input class="form-control" id="q" name="q" value="{{ q }}" placeholder="Nombre, tema o carrera">
+      </div>
+    </div>
+    <div class="col-md-5">
+      <label class="form-label" for="especialidad">Especialidad</label>
+      <select class="form-select" id="especialidad" name="especialidad">
+        <option value="">Todas</option>
+        {% for esp in especialidades %}
+          <option value="{{ esp.pk }}" {% if especialidad_id == esp.pk|stringformat:"s" %}selected{% endif %}>{{ esp.nombre }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+    </div>
+  </div>
 </form>
 
 {% if mentores %}
-  <ul>
+  <div class="row g-4">
     {% for oferta in mentores %}
-      <li>
-        <a href="{% url 'mentorias:detalle_mentor' oferta.pk %}">{{ oferta.perfil.nombre_completo }}</a>
-        — {{ oferta.perfil.carrera }}{% if oferta.perfil.ciclo %} · Ciclo {{ oferta.perfil.ciclo }}{% endif %}
-        {% if oferta.especialidades.all %}
-          (
-          {% for esp in oferta.especialidades.all %}
-            {{ esp.nombre }}{% if not forloop.last %}, {% endif %}
-          {% endfor %}
-          )
-        {% endif %}
-      </li>
+      <div class="col-md-6 col-xl-4">
+        <article class="card card-plataforma card-hover h-100 position-relative">
+          <div class="card-body p-4">
+            <div class="d-flex gap-3 mb-3">
+              {% include "includes/avatar.html" with perfil=oferta.perfil size=56 %}
+              <div>
+                <h2 class="h5 mb-1">
+                  <a class="stretched-link text-decoration-none text-body" href="{% url 'mentorias:detalle_mentor' oferta.pk %}">
+                    {{ oferta.perfil.nombre_completo }}
+                  </a>
+                </h2>
+                <p class="text-secondary small mb-0">
+                  {{ oferta.perfil.carrera }}{% if oferta.perfil.ciclo %} · Ciclo {{ oferta.perfil.ciclo }}{% endif %}
+                </p>
+              </div>
+            </div>
+            <p class="small mb-3" aria-label="Calificación {{ oferta.calificacion_promedio }} de 5">
+              {% include "includes/estrellas.html" with promedio=oferta.calificacion_promedio total=oferta.total_valoraciones %}
+            </p>
+            <ul class="list-unstyled d-flex flex-wrap gap-1 mb-3">
+              {% for esp in oferta.especialidades.all %}
+                <li><span class="badge rounded-pill text-bg-light border">{{ esp.nombre }}</span></li>
+              {% endfor %}
+            </ul>
+            <p class="small text-secondary mb-0">{{ oferta.temas|truncatewords:18|default:"Sin descripción de temas." }}</p>
+          </div>
+          <div class="card-footer bg-transparent border-0 px-4 pb-4 pt-0">
+            <span class="small text-primary fw-semibold">Ver perfil <i class="bi bi-arrow-right" aria-hidden="true"></i></span>
+          </div>
+        </article>
+      </div>
     {% endfor %}
-  </ul>
+  </div>
 {% else %}
-  <p>No se encontraron mentores con esos criterios.</p>
+  <div class="card card-plataforma">
+    <div class="card-body text-center py-5">
+      <i class="bi bi-search display-5 text-secondary d-block mb-3" aria-hidden="true"></i>
+      <h2 class="h5">Sin resultados</h2>
+      <p class="text-secondary mb-0">No se encontraron mentores con esos criterios.</p>
+    </div>
+  </div>
 {% endif %}
 {% endblock %}

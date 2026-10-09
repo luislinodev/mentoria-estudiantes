@@ -1,44 +1,155 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Plataforma de mentoría entre estudiantes de ciclos iniciales y avanzados.">
   <title>{% block title %}Mentoría entre Estudiantes{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="{% static 'css/plataforma.css' %}">
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
+  <a class="visually-hidden-focusable skip-link" href="#contenido">Saltar al contenido</a>
+
   <header>
-    <p><a href="{% url 'cuentas:inicio' %}">Mentoría entre Estudiantes</a></p>
-    <nav>
-      <ul>
-        {% if user.is_authenticated %}
-          <li><a href="{% url 'mentorias:buscar' %}">Buscar mentores</a></li>
-          <li><a href="{% url 'mentorias:solicitudes' %}">Solicitudes</a></li>
-          <li><a href="{% url 'mentorias:sesiones' %}">Sesiones</a></li>
-          {% if perfil_actual and perfil_actual.es_mentor %}
-            <li><a href="{% url 'mentorias:editar_oferta' %}">Mi oferta</a></li>
-          {% endif %}
-          <li><a href="{% url 'cuentas:mi_perfil' %}">Mi perfil</a></li>
-          <li><a href="{% url 'account_logout' %}">Cerrar sesión</a></li>
-        {% else %}
-          <li><a href="{% url 'account_login' %}">Iniciar sesión</a></li>
-        {% endif %}
-      </ul>
+    <nav class="navbar navbar-expand-lg navbar-light navbar-plataforma bg-white border-bottom sticky-top" aria-label="Navegación principal">
+      <div class="container">
+        <a class="navbar-brand fw-semibold d-flex align-items-center gap-2 text-dark" href="{% url 'cuentas:inicio' %}">
+          <span class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-3 icon-tile" style="width: 2.15rem; height: 2.15rem;">
+            <i class="bi bi-mortarboard-fill" aria-hidden="true"></i>
+          </span>
+          <span>
+            Mentoría
+            <span class="d-none d-sm-inline text-secondary fw-normal">Estudiantes</span>
+          </span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal"
+                aria-controls="menuPrincipal" aria-expanded="false" aria-label="Abrir menú">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="menuPrincipal">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-1">
+            {% if user.is_authenticated %}
+              {% with url_name=request.resolver_match.url_name|default:"" %}
+              <li class="nav-item">
+                <a class="nav-link {% if url_name == 'panel' %}active{% endif %}" {% if url_name == 'panel' %}aria-current="page"{% endif %} href="{% url 'cuentas:panel' %}">
+                  <i class="bi bi-grid me-1" aria-hidden="true"></i>Panel
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {% if url_name == 'buscar' or url_name == 'detalle_mentor' %}active{% endif %}" href="{% url 'mentorias:buscar' %}">
+                  <i class="bi bi-search me-1" aria-hidden="true"></i>Mentores
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {% if url_name == 'solicitudes' or url_name == 'aceptar_solicitud' %}active{% endif %}" href="{% url 'mentorias:solicitudes' %}">
+                  <i class="bi bi-inbox me-1" aria-hidden="true"></i>Solicitudes
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {% if url_name == 'sesiones' or url_name == 'detalle_sesion' %}active{% endif %}" href="{% url 'mentorias:sesiones' %}">
+                  <i class="bi bi-calendar-event me-1" aria-hidden="true"></i>Sesiones
+                </a>
+              </li>
+              <li class="nav-item dropdown ms-lg-2">
+                <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 {% if url_name == 'mi_perfil' or url_name == 'completar_perfil' %}active{% endif %}"
+                   href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  {% if perfil_actual %}
+                    {% include "includes/avatar.html" with perfil=perfil_actual size=32 %}
+                    <span class="d-none d-lg-inline">{{ perfil_actual.nombre_completo|truncatechars:22 }}</span>
+                  {% else %}
+                    <i class="bi bi-person-circle" aria-hidden="true"></i>
+                    <span class="d-none d-lg-inline">Cuenta</span>
+                  {% endif %}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                  <li>
+                    <a class="dropdown-item py-2" href="{% url 'cuentas:mi_perfil' %}">
+                      <i class="bi bi-person me-2 text-primary" aria-hidden="true"></i>Mi perfil
+                    </a>
+                  </li>
+                  {% if perfil_actual.es_mentor %}
+                    <li>
+                      <a class="dropdown-item py-2" href="{% url 'mentorias:editar_oferta' %}">
+                        <i class="bi bi-briefcase me-2 text-primary" aria-hidden="true"></i>Mi oferta
+                      </a>
+                    </li>
+                  {% endif %}
+                  {% if user.is_staff %}
+                    <li>
+                      <a class="dropdown-item py-2" href="{% url 'admin:index' %}">
+                        <i class="bi bi-gear me-2 text-primary" aria-hidden="true"></i>Administración
+                      </a>
+                    </li>
+                  {% endif %}
+                  <li><hr class="dropdown-divider"></li>
+                  <li>
+                    <a class="dropdown-item py-2 text-danger" href="{% url 'account_logout' %}">
+                      <i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i>Cerrar sesión
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              {% endwith %}
+            {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'cuentas:inicio' %}#como-funciona">Cómo funciona</a>
+              </li>
+              <li class="nav-item ms-lg-2">
+                <a class="btn btn-primary px-3" href="{% url 'account_login' %}">Iniciar sesión</a>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
     </nav>
   </header>
 
-  <main>
-    {% if messages %}
-      <ul>
+  <main id="contenido" class="flex-grow-1 py-4 py-lg-5">
+    <div class="container">
+      {% if messages %}
         {% for message in messages %}
-          <li>{{ message }}</li>
+          <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm border-0" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar aviso"></button>
+          </div>
         {% endfor %}
-      </ul>
-    {% endif %}
-    {% block content %}{% endblock %}
+      {% endif %}
+      {% block content %}{% endblock %}
+    </div>
   </main>
 
-  <footer>
-    <p>Mentoría entre estudiantes</p>
+  <footer class="bg-dark text-white-50 mt-auto py-5">
+    <div class="container">
+      <div class="row gy-4">
+        <div class="col-md-6 col-lg-5">
+          <p class="text-white fw-semibold mb-2 d-flex align-items-center gap-2">
+            <span class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-3" style="width: 1.75rem; height: 1.75rem;">
+              <i class="bi bi-mortarboard-fill" aria-hidden="true"></i>
+            </span>
+            Mentoría Estudiantes
+          </p>
+          <p class="small mb-0">Conecta estudiantes de ciclos iniciales con mentores de ciclos avanzados. Datos personales protegidos.</p>
+        </div>
+        <div class="col-md-6 col-lg-7 d-flex flex-column flex-lg-row justify-content-lg-end gap-3 gap-lg-5">
+          <div>
+            <p class="text-white small fw-semibold mb-2">Plataforma</p>
+            <p class="small mb-0">Agenda, solicitudes y valoraciones en un solo lugar.</p>
+          </div>
+          <div>
+            <p class="text-white small fw-semibold mb-2">Uso</p>
+            <p class="small mb-0">Proyecto académico · interfaz accesible</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+          crossorigin="anonymous"></script>
 </body>
 </html>

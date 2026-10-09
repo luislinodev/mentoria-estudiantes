@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load socialaccount %}
+
+{% block title %}Registro{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7 col-lg-5">
+    <div class="card card-plataforma">
+      <div class="card-body p-4 p-lg-5 text-center">
+        <div class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-3 icon-tile mb-3">
+          <i class="bi bi-person-plus fs-4" aria-hidden="true"></i>
+        </div>
+        <h1 class="h3">Crear cuenta</h1>
+        <p class="text-secondary">El registro se hace con tu cuenta de Gmail.</p>
+        {% if google_oauth_configurado %}
+          <a class="btn btn-outline-dark w-100 py-2" href="{% provider_login_url 'google' %}">
+            <i class="bi bi-google me-2" aria-hidden="true"></i>Continuar con Google
+          </a>
+        {% else %}
+          <p class="text-secondary">Configura las credenciales de Google para registrarte.</p>
+          <a class="btn btn-primary" href="{% url 'account_login' %}">Volver al inicio de sesión</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

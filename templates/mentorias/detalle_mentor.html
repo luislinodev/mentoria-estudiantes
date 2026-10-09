@@ -3,39 +3,82 @@
 {% block title %}{{ oferta.perfil.nombre_completo }}{% endblock %}
 
 {% block content %}
-<p><a href="{% url 'mentorias:buscar' %}">Buscar mentores</a></p>
-<h1>{{ oferta.perfil.nombre_completo }}</h1>
-<p>
-  {{ oferta.perfil.carrera }}{% if oferta.perfil.ciclo %} · Ciclo {{ oferta.perfil.ciclo }}{% endif %}
-</p>
-{% if oferta.perfil.biografia %}
-  <p>{{ oferta.perfil.biografia }}</p>
-{% endif %}
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb mb-0">
+    <li class="breadcrumb-item"><a href="{% url 'cuentas:panel' %}">Panel</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'mentorias:buscar' %}">Buscar mentores</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ oferta.perfil.nombre_completo }}</li>
+  </ol>
+</nav>
 
-<h2>Especialidades</h2>
-<ul>
-  {% for esp in oferta.especialidades.all %}
-    <li>{{ esp.nombre }}</li>
-  {% empty %}
-    <li>Sin especialidades registradas.</li>
-  {% endfor %}
-</ul>
-
-<h2>Temas</h2>
-<p>{{ oferta.temas|default:"Sin descripción de temas." }}</p>
-<p>Disponibilidad: {{ oferta.disponibilidad|default:"No indicada" }}</p>
-<p>Calificación: {{ oferta.calificacion_promedio }} ({{ oferta.total_valoraciones }} valoraciones)</p>
-
-{% if perfil_actual and perfil_actual.es_aprendiz and oferta.perfil.usuario != user %}
-  <p><a href="{% url 'mentorias:crear_solicitud' oferta.pk %}">Solicitar mentoría</a></p>
-{% endif %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <article class="card card-plataforma">
+      <div class="card-body p-4 p-lg-5">
+        <div class="d-flex flex-wrap gap-3 mb-4 align-items-start">
+          {% include "includes/avatar.html" with perfil=oferta.perfil size=88 %}
+          <div class="flex-grow-1">
+            <h1 class="h3 mb-1">{{ oferta.perfil.nombre_completo }}</h1>
+            <p class="text-secondary mb-2">
+              {{ oferta.perfil.carrera }}{% if oferta.perfil.ciclo %} · Ciclo {{ oferta.perfil.ciclo }}{% endif %}
+            </p>
+            <p class="mb-0" aria-label="Calificación promedio {{ oferta.calificacion_promedio }} de 5">
+              {% include "includes/estrellas.html" with promedio=oferta.calificacion_promedio total=oferta.total_valoraciones %}
+            </p>
+          </div>
+        </div>
+        {% if oferta.perfil.biografia %}
+          <p class="mb-4">{{ oferta.perfil.biografia }}</p>
+        {% endif %}
+        <h2 class="h5">Especialidades</h2>
+        <ul class="list-unstyled d-flex flex-wrap gap-1 mb-4">
+          {% for esp in oferta.especialidades.all %}
+            <li><span class="badge rounded-pill text-bg-primary">{{ esp.nombre }}</span></li>
+          {% empty %}
+            <li class="text-secondary">Sin especialidades registradas.</li>
+          {% endfor %}
+        </ul>
+        <h2 class="h5">Temas</h2>
+        <p class="mb-0">{{ oferta.temas|default:"No especificados." }}</p>
+      </div>
+    </article>
+  </div>
+  <div class="col-lg-4">
+    <aside class="card card-plataforma mb-4">
+      <div class="card-body p-4">
+        <h2 class="h6 text-uppercase text-secondary mb-3">Disponibilidad</h2>
+        <p class="mb-4">
+          <i class="bi bi-clock me-1 text-primary" aria-hidden="true"></i>
+          {{ oferta.disponibilidad|default:"A coordinar" }}
+        </p>
+        {% if perfil_actual.es_aprendiz and oferta.perfil.usuario != user %}
+          <a class="btn btn-primary w-100" href="{% url 'mentorias:crear_solicitud' oferta.pk %}">
+            <i class="bi bi-send me-1" aria-hidden="true"></i>Solicitar mentoría
+          </a>
+        {% endif %}
+      </div>
+    </aside>
+  </div>
+</div>
 
 {% if valoraciones %}
-  <h2>Valoraciones</h2>
-  <ul>
-    {% for valoracion in valoraciones %}
-      <li>{{ valoracion.estrellas }} — {{ valoracion.comentario }}</li>
-    {% endfor %}
-  </ul>
+  <section class="mt-4" aria-labelledby="val-title">
+    <h2 id="val-title" class="h4 mb-3">Valoraciones</h2>
+    <div class="row g-3">
+      {% for v in valoraciones %}
+        <div class="col-md-6">
+          <article class="card card-plataforma h-100">
+            <div class="card-body p-4">
+              <p class="mb-2" aria-label="{{ v.estrellas }} de 5 estrellas">
+                {% include "includes/estrellas.html" with promedio=v.estrellas %}
+              </p>
+              <p class="mb-1">{{ v.comentario }}</p>
+              <p class="small text-secondary mb-0">{{ v.creado|date:"d/m/Y" }}</p>
+            </div>
+          </article>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
 {% endif %}
 {% endblock %}

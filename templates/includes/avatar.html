@@ -1,0 +1,15 @@
+{% with s=size|default:48 %}
+  {% if perfil.avatar_url %}
+    <img src="{{ perfil.avatar_url }}"
+         alt="Foto de {{ perfil.nombre_completo }}"
+         width="{{ s }}"
+         height="{{ s }}"
+         class="rounded-circle object-fit-cover flex-shrink-0 bg-secondary-subtle">
+  {% else %}
+    <div class="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center fw-semibold flex-shrink-0"
+         style="width: {{ s }}px; height: {{ s }}px;"
+         aria-hidden="true">
+      {{ perfil.nombre_completo|first|upper }}
+    </div>
+  {% endif %}
+{% endwith %}

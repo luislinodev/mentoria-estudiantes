@@ -1,17 +1,43 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block title %}Aceptar solicitud{% endblock %}
 
 {% block content %}
-<p><a href="{% url 'mentorias:solicitudes' %}">Solicitudes</a></p>
-<h1>Agendar sesión</h1>
-<p>Aprendiz: {{ solicitud.aprendiz.get_full_name|default:solicitud.aprendiz.email }}</p>
-<p>Especialidad: {{ solicitud.especialidad }}</p>
-<blockquote>{{ solicitud.mensaje }}</blockquote>
-<form method="post">
-  {% csrf_token %}
-  {% include "includes/campos_formulario.html" %}
-  <button type="submit">Confirmar sesión</button>
-  <a href="{% url 'mentorias:solicitudes' %}">Volver</a>
-</form>
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb mb-0">
+    <li class="breadcrumb-item"><a href="{% url 'mentorias:solicitudes' %}">Solicitudes</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Agendar sesión</li>
+  </ol>
+</nav>
+
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card card-plataforma">
+      <div class="card-body p-4 p-lg-5">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-tile">
+            <i class="bi bi-calendar-plus fs-4" aria-hidden="true"></i>
+          </div>
+          <h1 class="h3 mb-0">Agendar sesión</h1>
+        </div>
+        <dl class="row mb-3">
+          <dt class="col-sm-4">Aprendiz</dt>
+          <dd class="col-sm-8">{{ solicitud.aprendiz.get_full_name|default:solicitud.aprendiz.email }}</dd>
+          <dt class="col-sm-4">Especialidad</dt>
+          <dd class="col-sm-8">{{ solicitud.especialidad }}</dd>
+        </dl>
+        <blockquote class="blockquote fs-6 bg-light rounded-3 p-3">{{ solicitud.mensaje }}</blockquote>
+        <form method="post" novalidate>
+          {% csrf_token %}
+          {{ form|crispy }}
+          <div class="d-flex flex-wrap gap-2">
+            <button type="submit" class="btn btn-primary">Confirmar sesión</button>
+            <a class="btn btn-outline-secondary" href="{% url 'mentorias:solicitudes' %}">Volver</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

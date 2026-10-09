@@ -3,14 +3,27 @@
 {% block title %}Cerrar sesión{% endblock %}
 
 {% block content %}
-<h1>Cerrar sesión</h1>
-<p>¿Seguro que quieres salir de la plataforma?</p>
-<form method="post" action="{% url 'account_logout' %}">
-  {% csrf_token %}
-  {% if redirect_field_value %}
-    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
-  {% endif %}
-  <button type="submit">Cerrar sesión</button>
-  <a href="{% url 'cuentas:mi_perfil' %}">Cancelar</a>
-</form>
+<div class="row justify-content-center">
+  <div class="col-md-7 col-lg-5">
+    <div class="card card-plataforma">
+      <div class="card-body p-4 p-lg-5 text-center">
+        <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-tile mb-3">
+          <i class="bi bi-box-arrow-right fs-4" aria-hidden="true"></i>
+        </div>
+        <h1 class="h3">Cerrar sesión</h1>
+        <p class="text-secondary">¿Seguro que quieres salir de la plataforma?</p>
+        <form method="post" action="{% url 'account_logout' %}">
+          {% csrf_token %}
+          {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+          {% endif %}
+          <div class="d-flex flex-wrap justify-content-center gap-2">
+            <button type="submit" class="btn btn-primary">Cerrar sesión</button>
+            <a class="btn btn-outline-secondary" href="{% url 'cuentas:panel' %}">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
