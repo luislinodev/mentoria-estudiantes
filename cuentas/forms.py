@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import Perfil
+from .models import Carrera, Perfil
 
 
 class PerfilForm(forms.ModelForm):
@@ -47,6 +47,9 @@ class PerfilForm(forms.ModelForm):
         usuario = self.instance.usuario
         self.fields["first_name"].initial = usuario.first_name
         self.fields["last_name"].initial = usuario.last_name
+        self.fields["carrera"].queryset = Carrera.objects.all()
+        self.fields["carrera"].empty_label = "Selecciona tu carrera"
+        self.fields["carrera"].required = True
 
     def clean_ciclo(self):
         ciclo = self.cleaned_data.get("ciclo")

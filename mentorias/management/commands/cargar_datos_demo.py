@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 
-from cuentas.models import Perfil
+from cuentas.models import Carrera, Perfil
 from mentorias.models import Especialidad, OfertaMentor
 
 User = get_user_model()
@@ -37,7 +37,8 @@ class Command(BaseCommand):
 
         perfil_m, _ = Perfil.objects.get_or_create(usuario=mentor)
         perfil_m.ciclo = 8
-        perfil_m.carrera = "Ingeniería de Software"
+        carrera = Carrera.objects.get(nombre="Diseño y Desarrollo de Software")
+        perfil_m.carrera = carrera
         perfil_m.biografia = "Estudiante de últimos ciclos. Me gusta explicar algoritmos y bases de datos."
         perfil_m.es_mentor = True
         perfil_m.es_aprendiz = False
@@ -46,7 +47,7 @@ class Command(BaseCommand):
 
         perfil_a, _ = Perfil.objects.get_or_create(usuario=aprendiz)
         perfil_a.ciclo = 2
-        perfil_a.carrera = "Ingeniería de Software"
+        perfil_a.carrera = carrera
         perfil_a.biografia = "Estoy empezando y busco apoyo en programación y hábitos de estudio."
         perfil_a.es_mentor = False
         perfil_a.es_aprendiz = True

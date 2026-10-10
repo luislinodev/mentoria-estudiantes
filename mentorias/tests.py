@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from cuentas.models import Perfil
+from cuentas.models import Carrera
 from mentorias.models import Especialidad, OfertaMentor, Sesion, Solicitud, Valoracion
 
 User = get_user_model()
@@ -22,13 +22,13 @@ class FlujoMentoriaTests(TestCase):
         perfil_m = self.mentor.perfil
         perfil_m.es_mentor = True
         perfil_m.perfil_completo = True
-        perfil_m.carrera = "Software"
+        perfil_m.carrera = Carrera.objects.get(nombre="Diseño y Desarrollo de Software")
         perfil_m.ciclo = 8
         perfil_m.save()
         perfil_a = self.aprendiz.perfil
         perfil_a.es_aprendiz = True
         perfil_a.perfil_completo = True
-        perfil_a.carrera = "Software"
+        perfil_a.carrera = Carrera.objects.get(nombre="Diseño y Desarrollo de Software")
         perfil_a.ciclo = 2
         perfil_a.save()
         self.especialidad = Especialidad.objects.create(nombre="Pruebas")

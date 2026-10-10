@@ -20,7 +20,7 @@ def buscar_mentores(request):
     especialidad_id = request.GET.get("especialidad", "").strip()
     mentores = (
         OfertaMentor.objects.filter(activo=True, perfil__es_mentor=True, perfil__perfil_completo=True)
-        .select_related("perfil__usuario")
+        .select_related("perfil__usuario", "perfil__carrera")
         .prefetch_related("especialidades")
         .distinct()
     )
@@ -29,7 +29,7 @@ def buscar_mentores(request):
             Q(perfil__usuario__first_name__icontains=q)
             | Q(perfil__usuario__last_name__icontains=q)
             | Q(temas__icontains=q)
-            | Q(perfil__carrera__icontains=q)
+            | Q(perfil__carrera__nombre__icontains=q)
             | Q(especialidades__nombre__icontains=q)
         ).distinct()
     if especialidad_id.isdigit():
@@ -49,7 +49,7 @@ def buscar_mentores(request):
 @login_required
 def detalle_mentor(request, pk):
     oferta = get_object_or_404(
-        OfertaMentor.objects.select_related("perfil__usuario").prefetch_related(
+        OfertaMentor.objects.select_related("perfil__usuario", "perfil__carrera").prefetch_related(
             "especialidades"
         ),
         pk=pk,

@@ -3,6 +3,19 @@ from django.db import models
 from django.urls import reverse
 
 
+class Carrera(models.Model):
+    nombre = models.CharField(max_length=120, unique=True)
+    orden = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        verbose_name = "carrera"
+        verbose_name_plural = "carreras"
+        ordering = ["orden", "nombre"]
+
+    def __str__(self):
+        return self.nombre
+
+
 class Perfil(models.Model):
     usuario = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -14,7 +27,13 @@ class Perfil(models.Model):
         blank=True,
         help_text="Ciclo académico actual (1 a 12).",
     )
-    carrera = models.CharField(max_length=120, blank=True)
+    carrera = models.ForeignKey(
+        Carrera,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="perfiles",
+    )
     biografia = models.TextField(blank=True)
     foto = models.ImageField(upload_to="perfiles/", blank=True, null=True)
     es_mentor = models.BooleanField(default=False)

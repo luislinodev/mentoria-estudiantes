@@ -1,6 +1,7 @@
 Django>=6.1,<6.2
 python-dotenv>=1.0
 django-allauth>=65.0
+PyJWT>=2.9
 django-crispy-forms>=2.3
 crispy-bootstrap5>=2024.10
 google-api-python-client>=2.150

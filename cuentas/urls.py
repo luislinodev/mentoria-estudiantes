@@ -6,6 +6,7 @@ app_name = "cuentas"
 
 urlpatterns = [
     path("", views.inicio, name="inicio"),
+    path("panel/", views.panel, name="panel"),
     path("perfil/", views.mi_perfil, name="mi_perfil"),
     path("perfil/completar/", views.completar_perfil, name="completar_perfil"),
     path("despues-login/", views.despues_login, name="despues_login"),
