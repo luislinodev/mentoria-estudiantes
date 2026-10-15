@@ -4,6 +4,12 @@ Plataforma web para acompañar a estudiantes de ciclos iniciales con estudiantes
 
 Quien se registra como mentor es tratado igual por la plataforma. No hay un campo que distinga si esa persona sigue estudiando o ya se graduó: esa diferencia la decide quien se postula, no el sistema.
 
+## Enlaces
+
+- [Repositorio](https://github.com/luislinodev/mentoria-estudiantes)
+- [Sprints semanales](https://app.notion.com/p/Mentor-a-Estudiantes-3f7f1e0703d880ee8d46d210be837eaf?source=copy_link)
+- [Capturas de pantalla](https://www.figma.com/design/mPHcrylz5mt2ievb3s70U2/Sin-t%C3%ADtulo?node-id=0-1&t=CWoHN1dPU5o5yRh4-1)
+
 ## El problema
 
 Los estudiantes nuevos suelen no tener un canal directo para resolver dudas académicas o de orientación profesional con quienes van más adelante. Ese conocimiento existe en la institución, en estudiantes de ciclos superiores y en egresados, pero no hay un lugar que reúna la búsqueda, el contacto y la programación de estas mentorías.

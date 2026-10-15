@@ -1,4 +1,5 @@
 from datetime import timedelta
+from unittest.mock import MagicMock, patch
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -6,6 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from cuentas.models import Carrera
+from mentorias.calendario import crear_evento_calendario
 from mentorias.models import Especialidad, OfertaMentor, Sesion, Solicitud, Valoracion
 
 User = get_user_model()
@@ -79,3 +81,89 @@ class FlujoMentoriaTests(TestCase):
         self.assertEqual(Valoracion.objects.count(), 1)
         self.oferta.refresh_from_db()
         self.assertEqual(float(self.oferta.calificacion_promedio), 4.0)
+
+
+class CalendarioAprendizTests(TestCase):
+    def setUp(self):
+        self.mentor = User.objects.create_user(
+            "mentor-cal", "mentor.cal@example.com", "clave12345", first_name="Ana", last_name="Mentor"
+        )
+        self.aprendiz = User.objects.create_user(
+            "aprendiz-cal",
+            "aprendiz.cal@example.com",
+            "clave12345",
+            first_name="Pablo",
+            last_name="Aprendiz",
+        )
+        especialidad = Especialidad.objects.create(nombre="Calendario")
+        solicitud = Solicitud.objects.create(
+            aprendiz=self.aprendiz,
+            mentor=self.mentor,
+            especialidad=especialidad,
+            mensaje="Necesito el enlace.",
+            estado=Solicitud.Estado.ACEPTADA,
+        )
+        inicio = timezone.now() + timedelta(days=2)
+        self.sesion = Sesion.objects.create(
+            solicitud=solicitud,
+            mentor=self.mentor,
+            aprendiz=self.aprendiz,
+            inicio=inicio,
+            fin=inicio + timedelta(hours=1),
+            notas="Traer ejercicios.",
+        )
+
+    def _servicio(self, inserts):
+        def insert(**kwargs):
+            inserts.append(kwargs)
+            req = MagicMock()
+            if kwargs.get("conferenceDataVersion"):
+                req.execute.return_value = {
+                    "id": "evt-mentor",
+                    "hangoutLink": "https://meet.google.com/abc-defg-hij",
+                }
+            else:
+                req.execute.return_value = {"id": "evt-aprendiz"}
+            return req
+
+        service = MagicMock()
+        service.events.return_value.insert.side_effect = insert
+        return service
+
+    @patch("googleapiclient.discovery.build")
+    @patch("mentorias.calendario._credenciales_google")
+    def test_crea_el_evento_en_el_calendario_del_aprendiz(self, credenciales, build):
+        credenciales.return_value = MagicMock()
+        inserts = []
+        build.return_value = self._servicio(inserts)
+
+        resultado = crear_evento_calendario(self.sesion)
+
+        self.assertTrue(resultado.mentor)
+        self.assertTrue(resultado.aprendiz)
+        self.assertEqual(len(inserts), 2)
+        self.assertEqual(inserts[0]["sendUpdates"], "none")
+        self.assertIn("conferenceData", inserts[0]["body"])
+        self.assertNotIn("conferenceData", inserts[1]["body"])
+        self.assertEqual(inserts[1]["body"]["location"], "https://meet.google.com/abc-defg-hij")
+        self.assertIn("https://meet.google.com/abc-defg-hij", inserts[1]["body"]["description"])
+        self.sesion.refresh_from_db()
+        self.assertEqual(self.sesion.google_event_id, "evt-mentor")
+        self.assertEqual(self.sesion.google_event_aprendiz_id, "evt-aprendiz")
+        self.assertEqual(self.sesion.enlace_meet, "https://meet.google.com/abc-defg-hij")
+
+    @patch("googleapiclient.discovery.build")
+    @patch("mentorias.calendario._credenciales_google")
+    def test_sin_google_del_aprendiz_invita_por_correo(self, credenciales, build):
+        credenciales.side_effect = lambda usuario: MagicMock() if usuario == self.mentor else None
+        inserts = []
+        build.return_value = self._servicio(inserts)
+
+        resultado = crear_evento_calendario(self.sesion)
+
+        self.assertTrue(resultado.mentor)
+        self.assertFalse(resultado.aprendiz)
+        self.assertEqual(len(inserts), 1)
+        self.assertEqual(inserts[0]["sendUpdates"], "all")
+        self.sesion.refresh_from_db()
+        self.assertEqual(self.sesion.google_event_aprendiz_id, "")

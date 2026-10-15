@@ -1,4 +1,5 @@
 import logging
+from dataclasses import dataclass
 from datetime import timedelta
 
 from django.conf import settings
@@ -8,6 +9,12 @@ from django.utils import timezone
 from mentorias.models import Sesion
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class ResultadoCalendario:
+    mentor: bool = False
+    aprendiz: bool = False
 
 
 def _credenciales_google(usuario):
@@ -38,65 +45,135 @@ def _credenciales_google(usuario):
     )
 
 
-def crear_evento_calendario(sesion: Sesion) -> bool:
-    """Crea un evento en Google Calendar del mentor. Devuelve False si no se pudo."""
+def _nombre(usuario):
+    return usuario.get_full_name() or usuario.email
+
+
+def _descripcion(sesion: Sesion, enlace: str = "") -> str:
+    texto = (
+        f"Sesión de mentoría entre {_nombre(sesion.mentor)} "
+        f"y {_nombre(sesion.aprendiz)}."
+    )
+    if enlace:
+        texto += f"\n\nEnlace de Google Meet:\n{enlace}"
+    if sesion.notas:
+        texto += f"\n\n{sesion.notas}"
+    return texto
+
+
+def _horario(sesion: Sesion) -> dict:
+    return {
+        "start": {
+            "dateTime": sesion.inicio.isoformat(),
+            "timeZone": settings.TIME_ZONE,
+        },
+        "end": {
+            "dateTime": sesion.fin.isoformat(),
+            "timeZone": settings.TIME_ZONE,
+        },
+    }
+
+
+def _insertar_evento(creds, cuerpo: dict, *, con_meet: bool, send_updates: str):
+    from googleapiclient.discovery import build
+
+    service = build("calendar", "v3", credentials=creds, cache_discovery=False)
+    parametros = {
+        "calendarId": "primary",
+        "body": cuerpo,
+        "sendUpdates": send_updates,
+    }
+    if con_meet:
+        parametros["conferenceDataVersion"] = 1
+    return service.events().insert(**parametros).execute()
+
+
+def _enlace_meet(evento: dict) -> str:
+    enlace = evento.get("hangoutLink") or ""
+    if enlace:
+        return enlace
+    puntos = evento.get("conferenceData", {}).get("entryPoints", [])
+    for punto in puntos:
+        if punto.get("uri"):
+            return punto["uri"]
+    return ""
+
+
+def _crear_evento_mentor(sesion: Sesion, *, invitar_por_correo: bool) -> bool:
     creds = _credenciales_google(sesion.mentor)
     if creds is None:
-        logger.info("Sin credenciales de Calendar para %s", sesion.mentor)
+        logger.info("Sin credenciales de Calendar para el mentor %s", sesion.mentor)
         return False
+    especialidad = sesion.solicitud.especialidad.nombre
+    cuerpo = {
+        "summary": f"Mentoría: {especialidad}",
+        "description": _descripcion(sesion),
+        "attendees": [
+            {"email": sesion.mentor.email},
+            {"email": sesion.aprendiz.email},
+        ],
+        "conferenceData": {
+            "createRequest": {
+                "requestId": f"mentoria-{sesion.pk}",
+                "conferenceSolutionKey": {"type": "hangoutsMeet"},
+            }
+        },
+        **_horario(sesion),
+    }
     try:
-        from googleapiclient.discovery import build
-
-        service = build("calendar", "v3", credentials=creds, cache_discovery=False)
-        especialidad = sesion.solicitud.especialidad.nombre
-        evento = {
-            "summary": f"Mentoría: {especialidad}",
-            "description": (
-                f"Sesión de mentoría entre {sesion.mentor.get_full_name()} "
-                f"y {sesion.aprendiz.get_full_name()}.\n\n"
-                f"{sesion.notas}"
-            ),
-            "start": {
-                "dateTime": sesion.inicio.isoformat(),
-                "timeZone": settings.TIME_ZONE,
-            },
-            "end": {
-                "dateTime": sesion.fin.isoformat(),
-                "timeZone": settings.TIME_ZONE,
-            },
-            "attendees": [
-                {"email": sesion.mentor.email},
-                {"email": sesion.aprendiz.email},
-            ],
-            "conferenceData": {
-                "createRequest": {
-                    "requestId": f"mentoria-{sesion.pk}",
-                    "conferenceSolutionKey": {"type": "hangoutsMeet"},
-                }
-            },
-        }
-        creado = (
-            service.events()
-            .insert(
-                calendarId="primary",
-                body=evento,
-                conferenceDataVersion=1,
-                sendUpdates="all",
-            )
-            .execute()
+        creado = _insertar_evento(
+            creds,
+            cuerpo,
+            con_meet=True,
+            send_updates="all" if invitar_por_correo else "none",
         )
-        sesion.google_event_id = creado.get("id", "")
-        enlace = creado.get("hangoutLink") or ""
-        if not enlace:
-            puntos = creado.get("conferenceData", {}).get("entryPoints", [])
-            if puntos:
-                enlace = puntos[0].get("uri", "")
-        sesion.enlace_meet = enlace
-        sesion.save(update_fields=["google_event_id", "enlace_meet"])
-        return True
     except Exception:
-        logger.exception("No se pudo crear el evento de Calendar para la sesión %s", sesion.pk)
+        logger.exception("No se pudo crear el evento del mentor para la sesión %s", sesion.pk)
         return False
+    sesion.google_event_id = creado.get("id", "")
+    sesion.enlace_meet = _enlace_meet(creado)
+    sesion.save(update_fields=["google_event_id", "enlace_meet"])
+    return True
+
+
+def _crear_evento_aprendiz(sesion: Sesion) -> bool:
+    """Copia el horario al calendario del aprendiz con el mismo enlace de Meet.
+
+    Listar al aprendiz como invitado no pone el evento en su calendario: Google
+    lo deja solo en el del mentor. Hace falta crearlo con la cuenta del aprendiz.
+    """
+    creds = _credenciales_google(sesion.aprendiz)
+    if creds is None:
+        logger.info("Sin credenciales de Calendar para el aprendiz %s", sesion.aprendiz)
+        return False
+    especialidad = sesion.solicitud.especialidad.nombre
+    enlace = sesion.enlace_meet
+    cuerpo = {
+        "summary": f"Mentoría: {especialidad}",
+        "description": _descripcion(sesion, enlace),
+        **_horario(sesion),
+    }
+    if enlace:
+        cuerpo["location"] = enlace
+    try:
+        creado = _insertar_evento(creds, cuerpo, con_meet=False, send_updates="none")
+    except Exception:
+        logger.exception("No se pudo crear el evento del aprendiz para la sesión %s", sesion.pk)
+        return False
+    sesion.google_event_aprendiz_id = creado.get("id", "")
+    sesion.save(update_fields=["google_event_aprendiz_id"])
+    return True
+
+
+def crear_evento_calendario(sesion: Sesion) -> ResultadoCalendario:
+    """Crea la reunión en el calendario del mentor y en el del aprendiz."""
+    aprendiz_conectado = _credenciales_google(sesion.aprendiz) is not None
+    mentor_ok = bool(sesion.google_event_id) or _crear_evento_mentor(
+        sesion,
+        invitar_por_correo=not aprendiz_conectado,
+    )
+    aprendiz_ok = bool(sesion.google_event_aprendiz_id) or _crear_evento_aprendiz(sesion)
+    return ResultadoCalendario(mentor=mentor_ok, aprendiz=aprendiz_ok)
 
 
 def enviar_recordatorio(sesion: Sesion) -> bool:

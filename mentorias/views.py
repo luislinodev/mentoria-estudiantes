@@ -158,9 +158,24 @@ def aceptar_solicitud(request, pk):
         )
         solicitud.estado = Solicitud.Estado.ACEPTADA
         solicitud.save(update_fields=["estado"])
-        creado = crear_evento_calendario(sesion)
-        if creado:
-            messages.success(request, "Sesión agendada y añadida a Google Calendar.")
+        calendario = crear_evento_calendario(sesion)
+        if calendario.mentor and calendario.aprendiz:
+            messages.success(
+                request,
+                "Sesión agendada en el calendario de Google del mentor y del aprendiz.",
+            )
+        elif calendario.mentor:
+            messages.success(
+                request,
+                "Sesión agendada en el calendario del mentor. No se pudo añadir al "
+                "calendario del aprendiz; el enlace de Meet queda en el detalle de la sesión.",
+            )
+        elif calendario.aprendiz:
+            messages.success(
+                request,
+                "Sesión agendada en el calendario del aprendiz. No se pudo crear "
+                "la reunión en el calendario del mentor.",
+            )
         else:
             messages.success(
                 request,
